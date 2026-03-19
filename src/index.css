@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: #F2F2F7;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iOS-style scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-sm;
+}
+
+.btn-primary {
+  @apply bg-apple-blue text-white font-medium py-3 px-6 rounded-xl active:opacity-80 transition-opacity;
+}
+
+.btn-secondary {
+  @apply bg-apple-gray-6 text-apple-blue font-medium py-3 px-6 rounded-xl active:opacity-80 transition-opacity;
+}
