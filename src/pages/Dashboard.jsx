@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts'
 import useAuthStore from '../store/useAuthStore'
 import usePortfolioStore from '../store/usePortfolioStore'
-import NavBar from '../components/NavBar'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 function generateAssetTrend() {
@@ -42,7 +41,7 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-apple-gray-6 pb-24">
+    <div className="min-h-screen bg-apple-gray-6 pb-24 lg:pb-0">
       {/* Header */}
       <div className="bg-apple-blue pt-12 pb-8 px-4">
         <div className="max-w-lg mx-auto">
@@ -118,11 +117,11 @@ export default function Dashboard() {
             <AreaChart data={trendData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="assetGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#007AFF" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#007AFF" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#971b2f" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#971b2f" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <Area type="monotone" dataKey="value" stroke="#007AFF" strokeWidth={2} fill="url(#assetGrad)" dot={false} />
+              <Area type="monotone" dataKey="value" stroke="#971b2f" strokeWidth={2} fill="url(#assetGrad)" dot={false} />
               <Tooltip
                 contentStyle={{ background: 'white', border: 'none', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
                 formatter={(v) => [`¥${v.toLocaleString()}`, t('dashboard.totalAssetLabel')]}
@@ -183,8 +182,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      <NavBar />
     </div>
   )
 }

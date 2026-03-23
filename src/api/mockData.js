@@ -53,8 +53,24 @@ export const mockHoldings = [
 
 // Mock transactions
 export const mockTransactions = [
-  { id: 't001', productId: 'f001', type: 'buy', amount: 2120, shares: 1000, nav: 2.1200, date: '2024-01-15 10:23' },
-  { id: 't002', productId: 'f003', type: 'buy', amount: 50000, shares: 50000, nav: 1.0000, date: '2024-03-01 09:15' },
-  { id: 't003', productId: 's001', type: 'buy', amount: 16500, shares: 10, nav: 1650.00, date: '2024-02-20 14:30' },
-  { id: 't004', productId: 'w001', type: 'buy', amount: 20000, shares: 20000, nav: 1.0000, date: '2024-04-10 11:00' },
+  { id: 't001', productId: 'f001', type: 'buy',  amount: 2120,  shares: 1000,  nav: 2.1200,  date: '2024-01-15 10:23' },
+  { id: 't002', productId: 'f003', type: 'buy',  amount: 50000, shares: 50000, nav: 1.0000,  date: '2024-03-01 09:15' },
+  { id: 't003', productId: 's001', type: 'buy',  amount: 16500, shares: 10,    nav: 1650.00, date: '2024-02-20 14:30' },
+  { id: 't004', productId: 'w001', type: 'buy',  amount: 20000, shares: 20000, nav: 1.0000,  date: '2024-04-10 11:00' },
+  { id: 't005', productId: 'f001', type: 'sell', amount: 500,   shares: 210,   nav: 2.3800,  date: '2024-05-02 13:45' },
+  { id: 't006', productId: 's002', type: 'buy',  amount: 4690,  shares: 20,    nav: 234.50,  date: '2024-05-10 10:00' },
+  { id: 't007', productId: 'f002', type: 'buy',  amount: 3000,  shares: 727,   nav: 4.1230,  date: '2024-05-15 09:30' },
+  { id: 't008', productId: 'w002', type: 'buy',  amount: 50000, shares: 50000, nav: 1.0000,  date: '2024-05-20 11:20' },
+  { id: 't009', productId: 's001', type: 'sell', amount: 17500, shares: 10,    nav: 1750.00, date: '2024-06-01 14:00' },
+  { id: 't010', productId: 'f003', type: 'sell', amount: 10000, shares: 10000, nav: 1.0000,  date: '2024-06-05 10:10' },
+  { id: 't011', productId: 'f004', type: 'buy',  amount: 5000,  shares: 1095,  nav: 4.5670,  date: '2024-06-10 09:00' },
+  { id: 't012', productId: 's003', type: 'buy',  amount: 3820,  shares: 100,   nav: 38.20,   date: '2024-06-15 10:30' },
+  { id: 't013', productId: 'f005', type: 'buy',  amount: 10000, shares: 549,   nav: 18.2340, date: '2024-06-20 11:00' },
+  { id: 't014', productId: 's004', type: 'buy',  amount: 5566,  shares: 20,    nav: 278.30,  date: '2024-07-01 09:45' },
+  { id: 't015', productId: 'f002', type: 'sell', amount: 1500,  shares: 364,   nav: 4.1230,  date: '2024-07-05 14:20' },
+  { id: 't016', productId: 'w001', type: 'sell', amount: 5000,  shares: 4752,  nav: 1.0523,  date: '2024-07-10 10:00' },
+  { id: 't017', productId: 'f001', type: 'buy',  amount: 3000,  shares: 1279,  nav: 2.3451,  date: '2024-07-15 09:15' },
+  { id: 't018', productId: 's002', type: 'sell', amount: 2345,  shares: 10,    nav: 234.50,  date: '2024-07-20 13:00' },
+  { id: 't019', productId: 'f004', type: 'buy',  amount: 2000,  shares: 438,   nav: 4.5670,  date: '2024-08-01 10:30' },
+  { id: 't020', productId: 's003', type: 'sell', amount: 1910,  shares: 50,    nav: 38.20,   date: '2024-08-05 11:45' },
 ]

@@ -7,11 +7,15 @@ export default {
         sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif'],
       },
       colors: {
+        'apple-blue': '#971b2f',
+        'apple-green': '#34C759',
+        'apple-red': '#c0392b',
+        'apple-orange': '#e67e22',
         apple: {
-          blue: '#007AFF',
+          blue: '#971b2f',
           green: '#34C759',
-          red: '#FF3B30',
-          orange: '#FF9500',
+          red: '#c0392b',
+          orange: '#e67e22',
           gray: {
             1: '#8E8E93',
             2: '#AEAEB2',

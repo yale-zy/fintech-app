@@ -80,7 +80,7 @@ function TradeModal({ product, mode, onClose }) {
                 />
                 <div className="flex gap-2 mt-3">
                   {[1000, 5000, 10000, 50000].map(v => (
-                    <button key={v} onClick={() => setAmount(String(v))} className="flex-1 py-1.5 rounded-lg bg-apple-gray-6 text-xs text-apple-gray-1 font-medium">
+          <button key={v} onClick={() => setAmount(String(v))} className="flex-1 py-1.5 rounded-lg bg-apple-gray-6 text-xs text-apple-gray-1 font-medium hover:bg-apple-gray-5 transition-colors">
                       {v >= 10000 ? `${v / 10000}w` : v}
                     </button>
                   ))}
@@ -142,7 +142,7 @@ export default function ProductDetail() {
   ].filter(Boolean)
 
   return (
-    <div className="min-h-screen bg-apple-gray-6 pb-28">
+    <div className="min-h-screen bg-apple-gray-6 pb-28 lg:pb-8">
       <PageHeader title={product.code} back />
 
       <div className="max-w-lg mx-auto px-4 space-y-3">
@@ -202,12 +202,12 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-apple-gray-5 px-4 py-4 pb-8">
+      <div className="fixed bottom-0 left-0 lg:left-64 right-0 bg-white/90 backdrop-blur-xl border-t border-apple-gray-5 px-4 py-4 pb-8">
         <div className="max-w-lg mx-auto flex gap-3">
-          <button onClick={() => setTradeMode('sell')} className="flex-1 py-3.5 rounded-xl bg-green-50 text-apple-green font-semibold text-base">
+          <button onClick={() => setTradeMode('sell')} className="flex-1 py-3.5 rounded-xl bg-green-50 text-apple-green font-semibold text-base hover:bg-green-100 transition-colors">
             {t('product.sell')}
           </button>
-          <button onClick={() => setTradeMode('buy')} className="flex-1 py-3.5 rounded-xl bg-red-50 text-apple-red font-semibold text-base">
+          <button onClick={() => setTradeMode('buy')} className="flex-1 py-3.5 rounded-xl bg-red-50 text-apple-red font-semibold text-base hover:bg-red-100 transition-colors">
             {t('product.buy')}
           </button>
         </div>

@@ -46,7 +46,7 @@ export default {
   },
   market: {
     title: '市場',
-    searchPlaceholder: '搜尋基金、股票名稱或代碼',
+    searchPlaceholder: '搜尋名稱或代碼',
     all: '全部',
     fund: '基金',
     stock: '股票',

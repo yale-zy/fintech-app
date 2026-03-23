@@ -4,7 +4,7 @@ import zhCN from './locales/zh-CN'
 import zhTW from './locales/zh-TW'
 import en from './locales/en'
 
-const savedLang = localStorage.getItem('lang') || 'zh-CN'
+const savedLang = localStorage.getItem('lang') || 'en'
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -13,7 +13,7 @@ i18n.use(initReactI18next).init({
     'en': { translation: en },
   },
   lng: savedLang,
-  fallbackLng: 'zh-CN',
+  fallbackLng: 'en',
   interpolation: { escapeValue: false },
 })
 
@@ -24,9 +24,9 @@ export const setLanguage = (lang) => {
 
 // Language display names are intentionally in their native script
 export const languages = [
+  { code: 'en', label: 'English' },
   { code: 'zh-CN', label: '简体中文' },
   { code: 'zh-TW', label: '繁體中文' },
-  { code: 'en', label: 'English' },
 ]
 
 export default i18n
