@@ -52,13 +52,25 @@ export default function AppLayout({ children }) {
 
   const tabs = [
     { path: '/market', label: t('nav.market'), icon: MarketIcon },
-    { path: '/portfolio', label: t('nav.portfolio'), icon: HoldingsIcon },
-    { path: '/portfolio?tab=transactions', label: t('portfolio.transactions'), icon: TransactionsIcon },
+    { path: '/assets', label: t('nav.assets'), icon: HoldingsIcon },
+    { path: '/assets?tab=transactions', label: t('assets.transactions'), icon: TransactionsIcon },
   ]
 
   return (
     <div className="min-h-screen bg-apple-gray-6 flex flex-col">
-      {/* Desktop top header */}
+      {/* Mobile top bar — always visible */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-12 bg-white/90 backdrop-blur-xl border-b border-apple-gray-5 flex items-center px-4 gap-3">
+        <button
+          onClick={() => navigate('/profile')}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
+          <div className="w-7 h-7 rounded-full bg-apple-blue flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-xs font-semibold">{user?.name?.[0]}</span>
+          </div>
+          <span className="text-sm font-semibold text-gray-900">{user?.name}</span>
+          <span className="text-xs text-apple-gray-1">@{user?.username}</span>
+        </button>
+      </header>
       <header className="hidden lg:flex fixed top-0 left-56 right-0 z-40 h-14 bg-white/80 backdrop-blur-xl border-b border-apple-gray-5 items-center justify-end px-6">
         <div className="relative" ref={dropdownRef}>
           <button
@@ -136,7 +148,7 @@ export default function AppLayout({ children }) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 lg:ml-56 lg:mt-14">
+      <main className="flex-1 lg:ml-56 lg:mt-14 mt-12">
         {children}
       </main>
 

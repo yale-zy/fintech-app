@@ -11,8 +11,8 @@ export default {
   nav: {
     dashboard: '總覽',
     market: '市場',
-    portfolio: '持倉',
-    profile: '我的',
+    assets: '資產',
+    profile: '設定',
   },
   login: {
     title: '財富通',
@@ -80,8 +80,8 @@ export default {
     orderId: '訂單號',
     nav: '淨值',
   },
-  portfolio: {
-    title: '我的持倉',
+  assets: {
+    title: '我的資產',
     holdings: '持倉',
     transactions: '交易記錄',
     assetDistribution: '資產分佈',
@@ -90,11 +90,14 @@ export default {
     noTransactions: '暫無交易記錄',
     shares: '持倉份額',
     cost: '成本',
+    costNav: '成本均價',
+    navTrend: '淨值走勢',
+    viewProduct: '查看產品',
     buy: '買',
     sell: '賣',
   },
   profile: {
-    title: '我的',
+    title: '設定',
     totalAsset: '總資產',
     totalReturn: '總收益率',
     holdingCount: '持倉數',
@@ -108,6 +111,24 @@ export default {
     logout: '登出',
     language: '語言',
     version: '財富通 v1.0.0',
+  },
+  order: {
+    id: '訂單號',
+    statusHistory: '狀態歷史',
+    pending: '待處理',
+    reviewing: '審核中',
+    approved: '已批准',
+    processing: '處理中',
+    settled: '已結算',
+    redeemed: '已贖回',
+  },
+  filter: {
+    searchProduct: '搜尋名稱或代碼',
+    all: '全部',
+    dateFrom: '開始',
+    dateTo: '結束',
+    clear: '清除篩選',
+    noResults: '暫無匹配記錄',
   },
   risk: {
     low: '低風險',

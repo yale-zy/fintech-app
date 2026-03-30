@@ -11,8 +11,8 @@ export default {
   nav: {
     dashboard: '总览',
     market: '市场',
-    portfolio: '持仓',
-    profile: '我的',
+    assets: '资产',
+    profile: '设置',
   },
   login: {
     title: '财富通',
@@ -80,8 +80,8 @@ export default {
     orderId: '订单号',
     nav: '净值',
   },
-  portfolio: {
-    title: '我的持仓',
+  assets: {
+    title: '我的资产',
     holdings: '持仓',
     transactions: '交易记录',
     assetDistribution: '资产分布',
@@ -90,11 +90,14 @@ export default {
     noTransactions: '暂无交易记录',
     shares: '持仓份额',
     cost: '成本',
+    costNav: '成本均价',
+    navTrend: '净值走势',
+    viewProduct: '查看产品',
     buy: '买',
     sell: '卖',
   },
   profile: {
-    title: '我的',
+    title: '设置',
     totalAsset: '总资产',
     totalReturn: '总收益率',
     holdingCount: '持仓数',
@@ -108,6 +111,24 @@ export default {
     logout: '退出登录',
     language: '语言',
     version: '财富通 v1.0.0',
+  },
+  order: {
+    id: '订单号',
+    statusHistory: '状态历史',
+    pending: '待处理',
+    reviewing: '审核中',
+    approved: '已批准',
+    processing: '处理中',
+    settled: '已结算',
+    redeemed: '已赎回',
+  },
+  filter: {
+    searchProduct: '搜索名称或代码',
+    all: '全部',
+    dateFrom: '开始',
+    dateTo: '结束',
+    clear: '清除筛选',
+    noResults: '暂无匹配记录',
   },
   risk: {
     low: '低风险',

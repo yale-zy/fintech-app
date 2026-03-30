@@ -52,7 +52,7 @@ export default function Market() {
   return (
     <div className="min-h-screen bg-apple-gray-6 pb-24 lg:pb-6">
       {/* Toolbar */}
-      <div className="sticky top-0 z-30 bg-apple-gray-6/90 backdrop-blur-xl px-4 pt-4 pb-3 space-y-3">
+      <div className="sticky top-12 lg:top-14 z-30 bg-apple-gray-6/90 backdrop-blur-xl px-4 pt-4 pb-3 space-y-3">
         {/* Search */}
         <div className="relative">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-apple-gray-2" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">

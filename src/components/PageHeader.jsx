@@ -5,7 +5,7 @@ export default function PageHeader({ title, back, right }) {
   const navigate = useNavigate()
   const { t } = useTranslation()
   return (
-    <div className="sticky top-0 z-40 bg-apple-gray-6/80 backdrop-blur-xl">
+    <div className="sticky top-12 lg:top-0 z-30 bg-apple-gray-6/80 backdrop-blur-xl">
       <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
         <div className="w-16">
           {back && (

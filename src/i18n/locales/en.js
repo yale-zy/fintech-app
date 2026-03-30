@@ -11,8 +11,8 @@ export default {
   nav: {
     dashboard: 'Overview',
     market: 'Market',
-    portfolio: 'Portfolio',
-    profile: 'Profile',
+    assets: 'Assets',
+    profile: 'Settings',
   },
   login: {
     title: 'WealthPro',
@@ -80,8 +80,8 @@ export default {
     orderId: 'Order ID',
     nav: 'NAV',
   },
-  portfolio: {
-    title: 'My Portfolio',
+  assets: {
+    title: 'My Assets',
     holdings: 'Holdings',
     transactions: 'Transactions',
     assetDistribution: 'Asset Allocation',
@@ -90,11 +90,14 @@ export default {
     noTransactions: 'No transactions yet',
     shares: 'Shares',
     cost: 'Cost',
+    costNav: 'Avg. Cost',
+    navTrend: 'NAV Trend',
+    viewProduct: 'View Product',
     buy: 'B',
     sell: 'S',
   },
   profile: {
-    title: 'Profile',
+    title: 'Settings',
     totalAsset: 'Total Assets',
     totalReturn: 'Total Return',
     holdingCount: 'Holdings',
@@ -108,6 +111,24 @@ export default {
     logout: 'Sign Out',
     language: 'Language',
     version: 'WealthPro v1.0.0',
+  },
+  order: {
+    id: 'Order No.',
+    statusHistory: 'Status History',
+    pending: 'Pending',
+    reviewing: 'Reviewing',
+    approved: 'Approved',
+    processing: 'Processing',
+    settled: 'Settled',
+    redeemed: 'Redeemed',
+  },
+  filter: {
+    searchProduct: 'Search by name or code',
+    all: 'All',
+    dateFrom: 'Start',
+    dateTo: 'End',
+    clear: 'Clear filters',
+    noResults: 'No matching transactions',
   },
   risk: {
     low: 'Low Risk',

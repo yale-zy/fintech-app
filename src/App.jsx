@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Market from './pages/Market'
 import ProductDetail from './pages/ProductDetail'
 import Portfolio from './pages/Portfolio'
+import HoldingDetail from './pages/HoldingDetail'
 import Profile from './pages/Profile'
 
 function PrivateRoute({ children }) {
@@ -22,7 +23,8 @@ export default function App() {
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/market" element={<PrivateRoute><Market /></PrivateRoute>} />
       <Route path="/product/:id" element={<PrivateRoute><ProductDetail /></PrivateRoute>} />
-      <Route path="/portfolio" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
+      <Route path="/assets" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
+      <Route path="/holding/:productId" element={<PrivateRoute><HoldingDetail /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route path="*" element={<Navigate to={isLoggedIn ? '/market' : '/login'} replace />} />
     </Routes>

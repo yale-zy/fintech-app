@@ -37,7 +37,7 @@ export default function Dashboard() {
     { label: t('dashboard.buyFund'), icon: '📈', path: '/market?type=fund' },
     { label: t('dashboard.buyStock'), icon: '📊', path: '/market?type=stock' },
     { label: t('dashboard.wealthProduct'), icon: '💰', path: '/market?type=wealth' },
-    { label: t('dashboard.tradeHistory'), icon: '📋', path: '/portfolio?tab=transactions' },
+    { label: t('dashboard.tradeHistory'), icon: '📋', path: '/assets?tab=transactions' },
   ]
 
   return (
@@ -134,7 +134,7 @@ export default function Dashboard() {
         <div className="card overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-apple-gray-5">
             <h3 className="text-sm font-semibold text-gray-900">{t('dashboard.holdingsTitle')}</h3>
-            <button onClick={() => navigate('/portfolio')} className="text-apple-blue text-sm">{t('dashboard.viewAll')}</button>
+            <button onClick={() => navigate('/assets')} className="text-apple-blue text-sm">{t('dashboard.viewAll')}</button>
           </div>
           {holdings.slice(0, 3).map((h, i) => (
             <div
