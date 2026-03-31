@@ -9,4 +9,7 @@ export const portfolioApi = {
 
   getTransactions: () =>
     http.get('/portfolio/transactions'),
+
+  getProductAccounts: () =>
+    http.get('/portfolio/accounts'),
 }

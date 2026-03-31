@@ -5,19 +5,11 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { portfolioApi } from '../api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import PageHeader from '../components/PageHeader'
-
-const STATUS_CONFIG = {
-  pending:    { bg: 'bg-yellow-50',     text: 'text-yellow-600', dot: 'bg-yellow-400',  key: 'order.pending'    },
-  reviewing:  { bg: 'bg-blue-50',       text: 'text-blue-600',   dot: 'bg-blue-400',    key: 'order.reviewing'  },
-  approved:   { bg: 'bg-apple-blue/10', text: 'text-apple-blue', dot: 'bg-apple-blue',  key: 'order.approved'   },
-  processing: { bg: 'bg-orange-50',     text: 'text-orange-500', dot: 'bg-orange-400',  key: 'order.processing' },
-  settled:    { bg: 'bg-green-50',      text: 'text-green-600',  dot: 'bg-green-500',   key: 'order.settled'    },
-  redeemed:   { bg: 'bg-green-50',      text: 'text-green-600',  dot: 'bg-green-500',   key: 'order.redeemed'   },
-}
+import { STATUS_CONFIG } from '../constants/orderStatus'
 
 function StatusBadge({ status }) {
   const { t } = useTranslation()
-  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.purchasing
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
@@ -31,7 +23,7 @@ function StatusTimeline({ history }) {
   return (
     <div className="pt-3 pb-1">
       {history.map((item, i) => {
-        const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG.pending
+        const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG.purchasing
         const isLast = i === history.length - 1
         return (
           <div key={i} className="flex gap-3">
@@ -152,7 +144,7 @@ function HoldingChart({ transactions }) {
   const totalDays = chartData.length
   const tickInterval = totalDays > 90 ? Math.floor(totalDays / 8) : totalDays > 30 ? 14 : 7
 
-  // render function â€” Recharts calls this for every point; return SVG only for tx points
+  // render function â€?Recharts calls this for every point; return SVG only for tx points
   const renderDot = (props) => {
     const { cx, cy, payload } = props
     if (!payload?.txType) return <g key={`nd-${cx}`} />
@@ -338,3 +330,4 @@ export default function HoldingDetail() {
     </div>
   )
 }
+

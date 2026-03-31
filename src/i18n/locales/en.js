@@ -6,10 +6,13 @@ export default {
     cancel: 'Cancel',
     done: 'Done',
     noData: 'No data',
+    collapse: 'Collapse',
+    showMore: '+{{count}} more',
     riskWarning: 'Investments involve risk. Please invest wisely.',
   },
   nav: {
     dashboard: 'Overview',
+    home: 'Home',
     market: 'Market',
     assets: 'Assets',
     profile: 'Settings',
@@ -115,12 +118,18 @@ export default {
   order: {
     id: 'Order No.',
     statusHistory: 'Status History',
-    pending: 'Pending',
-    reviewing: 'Reviewing',
-    approved: 'Approved',
-    processing: 'Processing',
-    settled: 'Settled',
-    redeemed: 'Redeemed',
+    purchasing: 'Purchasing',
+    success: 'Success',
+    failed: 'Failed',
+  },
+  account: {
+    number: 'Account No.',
+    balance: 'Balance',
+    totalBalance: 'Total Account Balance',
+  },
+  home: {
+    holding: 'Holding',
+    onHolding: 'Frozen (Purchasing)',
   },
   filter: {
     searchProduct: 'Search by name or code',

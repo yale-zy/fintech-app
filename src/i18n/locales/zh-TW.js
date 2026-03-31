@@ -6,10 +6,13 @@ export default {
     cancel: '取消',
     done: '完成',
     noData: '暫無資料',
+    collapse: '收起',
+    showMore: '還有{{count}}條',
     riskWarning: '投資有風險，入市需謹慎',
   },
   nav: {
     dashboard: '總覽',
+    home: '首頁',
     market: '市場',
     assets: '資產',
     profile: '設定',
@@ -115,12 +118,18 @@ export default {
   order: {
     id: '訂單號',
     statusHistory: '狀態歷史',
-    pending: '待處理',
-    reviewing: '審核中',
-    approved: '已批准',
-    processing: '處理中',
-    settled: '已結算',
-    redeemed: '已贖回',
+    purchasing: '購買中',
+    success: '成功',
+    failed: '失敗',
+  },
+  account: {
+    number: '帳戶號',
+    balance: '帳戶餘額',
+    totalBalance: '帳戶總餘額',
+  },
+  home: {
+    holding: '持倉中',
+    onHolding: '凍結中',
   },
   filter: {
     searchProduct: '搜尋名稱或代碼',

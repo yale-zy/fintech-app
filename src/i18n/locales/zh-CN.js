@@ -6,10 +6,13 @@ export default {
     cancel: '取消',
     done: '完成',
     noData: '暂无数据',
+    collapse: '收起',
+    showMore: '还有{{count}}条',
     riskWarning: '投资有风险，入市需谨慎',
   },
   nav: {
     dashboard: '总览',
+    home: '首页',
     market: '市场',
     assets: '资产',
     profile: '设置',
@@ -115,12 +118,18 @@ export default {
   order: {
     id: '订单号',
     statusHistory: '状态历史',
-    pending: '待处理',
-    reviewing: '审核中',
-    approved: '已批准',
-    processing: '处理中',
-    settled: '已结算',
-    redeemed: '已赎回',
+    purchasing: '购买中',
+    success: '成功',
+    failed: '失败',
+  },
+  account: {
+    number: '账户号',
+    balance: '账户余额',
+    totalBalance: '账户总余额',
+  },
+  home: {
+    holding: '持仓中',
+    onHolding: '冻结中',
   },
   filter: {
     searchProduct: '搜索名称或代码',

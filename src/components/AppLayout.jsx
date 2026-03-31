@@ -51,9 +51,8 @@ export default function AppLayout({ children }) {
   }, [])
 
   const tabs = [
-    { path: '/market', label: t('nav.market'), icon: MarketIcon },
-    { path: '/assets', label: t('nav.assets'), icon: HoldingsIcon },
-    { path: '/assets?tab=transactions', label: t('assets.transactions'), icon: TransactionsIcon },
+    { path: '/home', label: t('nav.home'), icon: MarketIcon },
+    { path: '/transactions', label: t('assets.transactions'), icon: TransactionsIcon },
   ]
 
   return (
@@ -126,8 +125,9 @@ export default function AppLayout({ children }) {
         {/* Nav items */}
         <nav className="flex-1 px-3 py-4 space-y-1">
           {tabs.map(tab => {
-            const active = location.pathname + location.search === tab.path ||
-              (tab.path === '/market' && location.pathname.startsWith('/product'))
+            const active = tab.path === '/home'
+              ? (location.pathname === '/home' || location.pathname.startsWith('/product') || location.pathname.startsWith('/holding'))
+              : location.pathname === tab.path
             const Icon = tab.icon
             return (
               <button
@@ -158,8 +158,9 @@ export default function AppLayout({ children }) {
         {dropdownOpen && (
           <div className="flex flex-col items-end gap-2 mb-1">
             {tabs.map(tab => {
-              const active = location.pathname + location.search === tab.path ||
-                (tab.path === '/market' && location.pathname.startsWith('/product'))
+              const active = tab.path === '/home'
+                ? (location.pathname === '/home' || location.pathname.startsWith('/product') || location.pathname.startsWith('/holding'))
+                : location.pathname === tab.path
               const Icon = tab.icon
               return (
                 <button

@@ -1,4 +1,4 @@
-import { mockUsers, mockProducts, mockChartData, mockHoldings, mockTransactions } from '../mockData'
+import { mockUsers, mockProducts, mockChartData, mockHoldings, mockTransactions, mockProductAccounts } from '../mockData'
 
 const delay = (ms = 400) => new Promise(r => setTimeout(r, ms))
 
@@ -98,6 +98,16 @@ const routes = [
       return mockTransactions.map(t => ({
         ...t,
         product: mockProducts.find(p => p.id === t.productId),
+      }))
+    },
+  },
+  {
+    method: 'get', url: /^\/portfolio\/accounts$/,
+    async handler() {
+      await delay(200)
+      return mockProductAccounts.map(acc => ({
+        ...acc,
+        product: mockProducts.find(p => p.id === acc.productId),
       }))
     },
   },

@@ -95,14 +95,11 @@ function TransactionRow({ tx, isLast }) {
   const [expanded, setExpanded] = useState(false)
   const isBuy = tx.type === 'buy'
   const statusCfg = {
-    pending:    { bg: 'bg-yellow-50',     text: 'text-yellow-600', dot: 'bg-yellow-400',  key: 'order.pending'    },
-    reviewing:  { bg: 'bg-blue-50',       text: 'text-blue-600',   dot: 'bg-blue-400',    key: 'order.reviewing'  },
-    approved:   { bg: 'bg-apple-blue/10', text: 'text-apple-blue', dot: 'bg-apple-blue',  key: 'order.approved'   },
-    processing: { bg: 'bg-orange-50',     text: 'text-orange-500', dot: 'bg-orange-400',  key: 'order.processing' },
-    settled:    { bg: 'bg-green-50',      text: 'text-green-600',  dot: 'bg-green-500',   key: 'order.settled'    },
-    redeemed:   { bg: 'bg-green-50',      text: 'text-green-600',  dot: 'bg-green-500',   key: 'order.redeemed'   },
+    purchasing: { bg: 'bg-orange-50',  text: 'text-orange-500', dot: 'bg-orange-400', key: 'order.purchasing' },
+    success:    { bg: 'bg-green-50',   text: 'text-green-600',  dot: 'bg-green-500',  key: 'order.success'    },
+    failed:     { bg: 'bg-red-50',     text: 'text-apple-red',  dot: 'bg-apple-red',  key: 'order.failed'     },
   }
-  const cfg = statusCfg[tx.status] || statusCfg.pending
+  const cfg = statusCfg[tx.status] || statusCfg.purchasing
 
   return (
     <div className={`${!isLast ? 'border-b border-apple-gray-5' : ''}`}>
@@ -147,7 +144,7 @@ function TransactionRow({ tx, isLast }) {
           </p>
           <div className="pt-1 pb-1">
             {tx.statusHistory.map((item, i) => {
-              const c = statusCfg[item.status] || statusCfg.pending
+              const c = statusCfg[item.status] || statusCfg.purchasing
               const isLast = i === tx.statusHistory.length - 1
               return (
                 <div key={i} className="flex gap-3">
@@ -327,7 +324,7 @@ export default function Portfolio() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
-  const activeTab = searchParams.get('tab') || 'holdings'
+  const activeTab = searchParams.get('tab') || 'transactions'
   const { holdings, transactions, summary, loading, fetchSummary, fetchTransactions } = usePortfolioStore()
 
   useEffect(() => {
@@ -365,3 +362,4 @@ export default function Portfolio() {
     </div>
   )
 }
+

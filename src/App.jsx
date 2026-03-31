@@ -2,11 +2,10 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import useAuthStore from './store/useAuthStore'
 import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Market from './pages/Market'
+import Home from './pages/Home'
 import ProductDetail from './pages/ProductDetail'
-import Portfolio from './pages/Portfolio'
 import HoldingDetail from './pages/HoldingDetail'
+import Transactions from './pages/Portfolio'
 import Profile from './pages/Profile'
 
 function PrivateRoute({ children }) {
@@ -19,14 +18,13 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Login />} />
-      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-      <Route path="/market" element={<PrivateRoute><Market /></PrivateRoute>} />
+      <Route path="/login" element={isLoggedIn ? <Navigate to="/home" replace /> : <Login />} />
+      <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+      <Route path="/transactions" element={<PrivateRoute><Transactions /></PrivateRoute>} />
       <Route path="/product/:id" element={<PrivateRoute><ProductDetail /></PrivateRoute>} />
-      <Route path="/assets" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
       <Route path="/holding/:productId" element={<PrivateRoute><HoldingDetail /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-      <Route path="*" element={<Navigate to={isLoggedIn ? '/market' : '/login'} replace />} />
+      <Route path="*" element={<Navigate to={isLoggedIn ? '/home' : '/login'} replace />} />
     </Routes>
   )
 }
