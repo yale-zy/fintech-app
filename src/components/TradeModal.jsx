@@ -2,20 +2,27 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { tradeApi } from '../api'
 
-export default function TradeModal({ product, mode, onClose }) {
+export default function TradeModal({ product, mode, accounts = [], onClose }) {
   const { t } = useTranslation()
+  const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.id || '')
   const [amount, setAmount] = useState('')
   const [shares, setShares] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
 
+  const chosenAccount = accounts.find(a => a.id === selectedAccount)
+
   const handleTrade = async () => {
+    if (mode === 'buy' && !selectedAccount) {
+      setError(t('account.selectRequired'))
+      return
+    }
     setError('')
     setLoading(true)
     try {
       const res = mode === 'buy'
-        ? await tradeApi.buy({ productId: product.id, amount: parseFloat(amount) })
+        ? await tradeApi.buy({ productId: product.id, amount: parseFloat(amount), accountId: selectedAccount })
         : await tradeApi.sell({ productId: product.id, shares: parseFloat(shares) })
       setResult(res)
     } catch (e) {
@@ -43,9 +50,13 @@ export default function TradeModal({ product, mode, onClose }) {
             <p className="text-apple-gray-1 text-sm mb-4">{result.message}</p>
             <div className="bg-apple-gray-6 rounded-2xl p-4 text-left space-y-2 mb-6">
               {[
-                { label: t('product.productName'), value: result.productName },
-                { label: mode === 'buy' ? t('product.buyAmount') : t('product.sellShares'), value: mode === 'buy' ? `¥${result.amount}` : `${result.shares}` },
-                { label: t('product.orderId'), value: result.orderId },
+                { label: t('trade.tradeId'),       value: result.orderId },
+                { label: t('trade.tradeDate'),      value: result.tradeDate },
+                { label: t('trade.action'),         value: result.action },
+                { label: t('trade.status'),         value: result.status },
+                { label: t('trade.assetAmount'),    value: result.assetAmount },
+                { label: t('trade.paymentAmount'),  value: `$${result.paymentAmount}` },
+                { label: t('trade.paymentAction'),  value: result.paymentAction },
               ].map(row => (
                 <div key={row.label} className="flex justify-between text-sm">
                   <span className="text-apple-gray-1">{row.label}</span>
@@ -60,13 +71,54 @@ export default function TradeModal({ product, mode, onClose }) {
             <h3 className="text-lg font-semibold text-gray-900 mb-1">
               {mode === 'buy' ? t('product.buyTitle') : t('product.sellTitle')}
             </h3>
-            <p className="text-apple-gray-1 text-sm mb-5">{product.name}</p>
+            <p className="text-apple-gray-1 text-sm mb-4">{product.name}</p>
+
+            {/* Account selector — buy only */}
+            {mode === 'buy' && accounts.length > 0 && (
+              <div className="mb-4">
+                <label className="text-xs text-apple-gray-1 font-medium block mb-2">{t('account.select')}</label>
+                <div className="space-y-2">
+                  {accounts.map(acc => (
+                    <button
+                      key={acc.id}
+                      onClick={() => setSelectedAccount(acc.id)}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
+                        selectedAccount === acc.id
+                          ? 'border-apple-blue bg-apple-blue/5'
+                          : 'border-apple-gray-5 hover:border-apple-gray-4'
+                      }`}
+                    >
+                      <div className="text-left">
+                        <p className="text-xs text-apple-gray-1">{t('account.number')}</p>
+                        <p className="text-sm font-medium text-gray-900">{acc.accountNo}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-apple-gray-1">{t('account.balance')}</p>
+                        <p className="text-sm font-semibold text-gray-900">${acc.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                      </div>
+                      {selectedAccount === acc.id && (
+                        <svg className="w-4 h-4 text-apple-blue ml-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {mode === 'buy' ? (
               <div>
                 <label className="text-xs text-apple-gray-1 font-medium">{t('product.buyAmountLabel')}</label>
-                <input type="number" value={amount} onChange={e => setAmount(e.target.value)}
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={e => { const v = e.target.value; if (v === '' || parseFloat(v) > 0) setAmount(v) }}
+                  min="0.000001"
+                  onKeyDown={e => (e.key === '-' || e.key === 'e') && e.preventDefault()}
                   placeholder={t('product.buyAmountPlaceholder', { min: product.minAmount })}
-                  className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30" />
+                  className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30"
+                />
                 <div className="flex gap-2 mt-3">
                   {[1000, 5000, 10000, 50000].map(v => (
                     <button key={v} onClick={() => setAmount(String(v))} className="flex-1 py-1.5 rounded-lg bg-apple-gray-6 text-xs text-apple-gray-1 font-medium hover:bg-apple-gray-5 transition-colors">
@@ -78,14 +130,21 @@ export default function TradeModal({ product, mode, onClose }) {
             ) : (
               <div>
                 <label className="text-xs text-apple-gray-1 font-medium">{t('product.sellSharesLabel')}</label>
-                <input type="number" value={shares} onChange={e => setShares(e.target.value)}
+                <input
+                  type="number"
+                  value={shares}
+                  onChange={e => setShares(e.target.value)}
                   placeholder={t('product.sellSharesPlaceholder')}
-                  className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30" />
+                  className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30"
+                />
               </div>
             )}
             {error && <p className="text-apple-red text-sm mt-3">{error}</p>}
-            <button onClick={handleTrade} disabled={loading || (!amount && !shares)}
-              className={`w-full mt-5 py-3.5 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50 ${mode === 'buy' ? 'bg-apple-blue' : 'bg-apple-green'}`}>
+            <button
+              onClick={handleTrade}
+              disabled={loading || (!amount && !shares)}
+              className={`w-full mt-5 py-3.5 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50 ${mode === 'buy' ? 'bg-apple-blue' : 'bg-apple-green'}`}
+            >
               {loading
                 ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin mx-auto" />
                 : mode === 'buy' ? t('product.confirmBuy') : t('product.confirmSell')}

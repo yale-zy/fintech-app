@@ -16,7 +16,6 @@ function AssetSummary({ summary, accounts, transactions }) {
   if (!summary) return null
   const totalAsset = summary.totalAsset + summary.cash
   const totalAccountBalance = accounts.reduce((s, a) => s + a.balance, 0)
-  // frozen = sum of buy transactions still in purchasing status
   const onHolding = transactions
     .filter(tx => tx.type === 'buy' && tx.status === 'purchasing')
     .reduce((s, tx) => s + tx.amount, 0)
@@ -25,35 +24,23 @@ function AssetSummary({ summary, accounts, transactions }) {
   const todayUp = todayPnl >= 0
 
   const pieData = [
-    { name: t('account.totalBalance'),    value: totalAccountBalance },
-    { name: t('dashboard.availableCash'), value: summary.cash },
-    { name: t('home.onHolding'),          value: onHolding },
+    { name: t('account.totalBalance'), value: totalAccountBalance },
+    { name: t('home.onHolding'),       value: onHolding },
   ].filter(d => d.value > 0)
 
   return (
     <div className="bg-white rounded-2xl border border-apple-gray-5 px-5 py-4">
       <div className="flex items-start gap-4">
         <div className="flex-1 min-w-0">
-          <div className="mb-4">
+            <div className="mb-4">
             <p className="text-xs text-apple-gray-1 mb-1">{t('profile.totalAsset')}</p>
-            <div className="flex items-baseline gap-3">
               <p className="text-2xl font-bold text-gray-900 tracking-tight">
-                {totalAsset.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {totalAccountBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-xs text-apple-gray-1">{t('dashboard.todayPnl')}</span>
-                <span className={`text-sm font-semibold ${todayUp ? 'text-apple-red' : 'text-apple-green'}`}>
-                  {todayUp ? '+' : ''}{todayPnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </span>
-              </div>
             </div>
-          </div>
           <div className="border-t border-apple-gray-5 pt-3 grid grid-cols-2 gap-x-4 gap-y-2">
             {[
-              { label: t('account.totalBalance'), value: `¥${totalAccountBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: PIE_COLORS[0] },
-              { label: t('dashboard.availableCash'), value: summary.cash.toLocaleString(undefined, { minimumFractionDigits: 2 }), color: PIE_COLORS[1] },
-              { label: t('profile.totalReturn'), value: `${isUp ? '+' : ''}${summary.totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: isUp ? '#971b2f' : '#34C759' },
-              { label: t('home.onHolding'), value: `¥${onHolding.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: PIE_COLORS[2] },
+              { label: t('home.onHolding'), value: `$${onHolding.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: PIE_COLORS[1] },
             ].map(item => (
               <div key={item.label} className="flex items-start gap-1.5">
                 <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ background: item.color }} />
@@ -73,7 +60,7 @@ function AssetSummary({ summary, accounts, transactions }) {
               </Pie>
               <Tooltip
                 contentStyle={{ background: 'white', border: 'none', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.1)', fontSize: 11 }}
-                formatter={v => [`¥${Number(v).toLocaleString(undefined, { minimumFractionDigits: 2 })}`]}
+                formatter={v => [`$${Number(v).toLocaleString(undefined, { minimumFractionDigits: 2 })}`]}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -105,7 +92,7 @@ function TxRow({ tx }) {
         </div>
         <div className="text-right ml-3 flex-shrink-0">
           <p className={`text-sm font-semibold ${isBuy ? 'text-apple-red' : 'text-apple-green'}`}>
-            {isBuy ? '-' : '+'}¥{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            {isBuy ? '-' : '+'}${tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-apple-gray-1 mt-0.5">{tx.shares} {t('assets.shares').toLowerCase()}</p>
         </div>
@@ -117,6 +104,37 @@ function TxRow({ tx }) {
       </div>
       {expanded && tx.statusHistory && (
         <div className="px-4 bg-apple-gray-6 border-t border-apple-gray-5 pb-2">
+          {/* Trade details */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 pb-3 border-b border-apple-gray-5">
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeDate')}</p>
+              <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.date}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeId')}</p>
+              <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.id}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.status')}</p>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold mt-0.5 ${cfg.bg} ${cfg.text}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                {t(cfg.key)}
+              </span>
+            </div>
+            <div className="col-span-2 flex gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('product.orderId')}</p>
+                <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.orderId}</p>
+              </div>
+              {tx.orderStatus && (
+                <div className="flex-1">
+                  <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('order.status')}</p>
+                  <p className="text-xs font-medium text-gray-800 mt-0.5">{t(`order.orderStatus.${tx.orderStatus}`)}</p>
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Status history */}
           <p className="text-xs font-semibold text-apple-gray-1 uppercase tracking-wide pt-2 mb-1">{t('order.statusHistory')}</p>
           {tx.statusHistory.map((item, i) => {
             const c = STATUS_CFG[item.status] || STATUS_CFG.purchasing
@@ -197,9 +215,9 @@ function ProductInfoPopover({ p }) {
           </div>
           {[
             { label: t('product.category'),    value: p.category },
-            { label: t('product.minAmount'),   value: `¥${p.minAmount.toLocaleString()}` },
+            { label: t('product.minAmount'),   value: `$${p.minAmount.toLocaleString()}` },
             p.annualReturn != null && { label: t('product.annualReturn'), value: `+${p.annualReturn}%`, color: 'text-apple-red' },
-            { label: t('product.nav'),         value: `¥${p.nav.toFixed(4)}` },
+            { label: t('product.nav'),         value: `$${p.nav.toFixed(4)}` },
           ].filter(Boolean).map(item => (
             <div key={item.label} className="flex justify-between">
               <span className="text-apple-gray-1">{item.label}</span>
@@ -222,52 +240,18 @@ function ProductCard({ p, holding, account, onBuy, onSell }) {
   return (
     <div className="p-5">
       {/* Header */}
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-apple-gray-2">{p.code}</span>
-          {holding && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-apple-blue/10 text-apple-blue">
-              {t('home.holding')}
-            </span>
-          )}
-        </div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-base font-semibold text-gray-900">{p.name}</p>
         <ProductInfoPopover p={p} />
       </div>
-      <p className="text-base font-semibold text-gray-900 mb-3">{p.name}</p>
 
-      {/* Account info */}
-      {account && (
-        <div className="flex items-center justify-between bg-apple-gray-6 rounded-xl px-3 py-2 mb-3">
-          <div>
-            <p className="text-xs text-apple-gray-1">{t('account.number')}</p>
-            <p className="text-xs font-medium text-gray-700 mt-0.5">{account.accountNo}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-apple-gray-1">{t('account.balance')}</p>
-            <p className="text-sm font-bold text-gray-900 mt-0.5">¥{account.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-          </div>
-        </div>
-      )}
 
-      {/* Price + holding value */}
-      <div className="flex items-end justify-between mb-4">
-        <div>
-          <p className="text-2xl font-bold text-gray-900">
-            {p.type === 'stock' ? `¥${p.nav.toFixed(2)}` : p.nav.toFixed(4)}
-          </p>
-          <span className={`text-sm font-semibold mt-1 inline-block ${isUp ? 'text-apple-red' : 'text-apple-green'}`}>
-            {isUp ? '+' : ''}{p.changeRate.toFixed(2)}%
-          </span>
-        </div>
-        {holding && (
-          <div className="text-right">
-            <p className="text-xs text-apple-gray-1 mb-0.5">{t('dashboard.investedAsset')}</p>
-            <p className="text-sm font-semibold text-gray-900">¥{holding.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-            <p className={`text-xs mt-0.5 ${holding.profit >= 0 ? 'text-apple-red' : 'text-apple-green'}`}>
-              {holding.profit >= 0 ? '+' : ''}¥{holding.profit.toFixed(2)}
-            </p>
-          </div>
-        )}
+
+      {/* Price */}
+      <div className="mb-4">
+        <p className="text-2xl font-bold text-gray-900">
+          {p.type === 'stock' ? `${p.nav.toFixed(2)}` : p.nav.toFixed(4)}
+        </p>
       </div>
 
       {/* Buy / Sell buttons */}
@@ -320,8 +304,8 @@ export default function Home() {
                   p={p}
                   holding={holdingMap[p.id] || null}
                   account={accountMap[p.id] || null}
-                  onBuy={() => setTradeModal({ product: p, mode: 'buy' })}
-                  onSell={() => setTradeModal({ product: p, mode: 'sell' })}
+                  onBuy={() => setTradeModal({ product: p, mode: 'buy', accounts })}
+                  onSell={() => setTradeModal({ product: p, mode: 'sell', accounts: [] })}
                 />
                 <ProductTransactions txs={txByProduct[p.id] || []} />
               </div>
@@ -334,6 +318,7 @@ export default function Home() {
         <TradeModal
           product={tradeModal.product}
           mode={tradeModal.mode}
+          accounts={tradeModal.accounts}
           onClose={() => setTradeModal(null)}
         />
       )}

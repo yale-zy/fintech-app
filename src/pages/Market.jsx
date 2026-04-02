@@ -22,7 +22,7 @@ function ProductWidget({ p, onClick }) {
       {/* Price */}
       <div>
         <p className="text-lg font-bold text-gray-900">
-          {p.type === 'stock' ? `¥${p.nav.toFixed(2)}` : p.nav.toFixed(4)}
+          {p.type === 'stock' ? `$${p.nav.toFixed(2)}` : p.nav.toFixed(4)}
         </p>
         <p className={`text-xs font-medium mt-0.5 ${isUp ? 'text-apple-red' : 'text-apple-green'}`}>
           {isUp ? '+' : ''}{p.changeRate.toFixed(2)}%

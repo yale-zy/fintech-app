@@ -91,19 +91,19 @@ export default function Dashboard() {
               <div className="text-center px-2">
                 <p className="text-apple-gray-1 text-xs mb-1">{t('dashboard.investedAsset')}</p>
                 <p className="text-gray-900 font-semibold text-sm">
-                  {hideAmount ? '****' : `¥${summary.totalAsset.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
+                  {hideAmount ? '****' : `$${summary.totalAsset.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
                 </p>
               </div>
               <div className="text-center px-2">
                 <p className="text-apple-gray-1 text-xs mb-1">{t('dashboard.availableCash')}</p>
                 <p className="text-gray-900 font-semibold text-sm">
-                  {hideAmount ? '****' : `¥${summary.cash.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
+                  {hideAmount ? '****' : `$${summary.cash.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
                 </p>
               </div>
               <div className="text-center px-2">
                 <p className="text-apple-gray-1 text-xs mb-1">{t('dashboard.todayPnl')}</p>
                 <p className={`font-semibold text-sm ${summary.totalProfit >= 0 ? 'text-apple-red' : 'text-apple-green'}`}>
-                  {hideAmount ? '****' : `${summary.totalProfit >= 0 ? '+' : ''}¥${(summary.totalProfit * 0.03).toFixed(2)}`}
+                  {hideAmount ? '****' : `${summary.totalProfit >= 0 ? '+' : ''}$${(summary.totalProfit * 0.03).toFixed(2)}`}
                 </p>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function Dashboard() {
               <Area type="monotone" dataKey="value" stroke="#971b2f" strokeWidth={2} fill="url(#assetGrad)" dot={false} />
               <Tooltip
                 contentStyle={{ background: 'white', border: 'none', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
-                formatter={(v) => [`¥${v.toLocaleString()}`, t('dashboard.totalAssetLabel')]}
+                formatter={(v) => [`$${v.toLocaleString()}`, t('dashboard.totalAssetLabel')]}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -158,7 +158,7 @@ export default function Dashboard() {
                   {h.profit >= 0 ? '+' : ''}{h.profitRate.toFixed(2)}%
                 </p>
                 <p className={`text-xs mt-0.5 ${h.profit >= 0 ? 'text-apple-red' : 'text-apple-green'}`}>
-                  {h.profit >= 0 ? '+' : ''}¥{hideAmount ? '**' : h.profit.toFixed(2)}
+                  {h.profit >= 0 ? '+' : ''}${hideAmount ? '**' : h.profit.toFixed(2)}
                 </p>
               </div>
             </div>

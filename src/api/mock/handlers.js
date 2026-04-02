@@ -9,7 +9,7 @@ const routes = [
     method: 'post', url: /^\/auth\/login$/,
     async handler(cfg) {
       await delay()
-      const { username, password } = JSON.parse(cfg.data)
+      const { username, password } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
       const user = mockUsers.find(u => u.username === username && u.password === password)
       if (!user) throw { message: 'invalid_credentials', status: 401 }
       const { password: _, ...userInfo } = user
@@ -117,14 +117,19 @@ const routes = [
     method: 'post', url: /^\/trade\/buy$/,
     async handler(cfg) {
       await delay(600)
-      const { productId, amount } = JSON.parse(cfg.data)
+      const { productId, amount } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
       const product = mockProducts.find(p => p.id === productId)
       if (!product) throw { message: 'product_not_found', status: 404 }
-      if (amount < product.minAmount) throw { message: `Minimum investment is ¥${product.minAmount}`, status: 400 }
       return {
         success: true,
         orderId: 'ORD' + Date.now(),
+        tradeDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        action: 'Buy',
+        status: 'Pending',
         productName: product.name,
+        assetAmount: parseFloat((amount / product.nav).toFixed(4)),
+        paymentAmount: amount,
+        paymentAction: 'Debit',
         amount,
         shares: parseFloat((amount / product.nav).toFixed(4)),
         nav: product.nav,
@@ -136,13 +141,19 @@ const routes = [
     method: 'post', url: /^\/trade\/sell$/,
     async handler(cfg) {
       await delay(600)
-      const { productId, shares } = JSON.parse(cfg.data)
+      const { productId, shares } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
       const product = mockProducts.find(p => p.id === productId)
       if (!product) throw { message: 'product_not_found', status: 404 }
       return {
         success: true,
         orderId: 'ORD' + Date.now(),
+        tradeDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        action: 'Sell',
+        status: 'Pending',
         productName: product.name,
+        assetAmount: shares,
+        paymentAmount: parseFloat((shares * product.nav).toFixed(2)),
+        paymentAction: 'Credit',
         amount: parseFloat((shares * product.nav).toFixed(2)),
         shares,
         nav: product.nav,

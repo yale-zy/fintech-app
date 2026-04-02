@@ -26,7 +26,7 @@ export default function ProductDetail() {
   const infoRows = [
     { label: t('product.category'),    value: product.category },
     { label: t('product.risk'),        value: <RiskBadge risk={product.risk} /> },
-    { label: t('product.minAmount'),   value: `¥${product.minAmount.toLocaleString()}` },
+    { label: t('product.minAmount'),   value: `$${product.minAmount.toLocaleString()}` },
     product.annualReturn && { label: t('product.annualReturn'), value: <span className="text-apple-red font-medium">+{product.annualReturn}%</span> },
     { label: t('product.description'), value: product.description },
   ].filter(Boolean)
@@ -52,13 +52,10 @@ export default function ProductDetail() {
       <div className="px-4 space-y-4">
         {/* Price card */}
         <div className="bg-white rounded-2xl p-5 border border-apple-gray-5">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-apple-blue/10 text-apple-blue">{product.code}</span>
-            <RiskBadge risk={product.risk} />
-          </div>
+
           <p className="text-sm font-medium text-gray-700 mb-1">{product.name}</p>
           <p className="text-3xl font-bold text-gray-900 mb-1">
-            {product.type === 'stock' ? `¥${product.nav.toFixed(2)}` : product.nav.toFixed(4)}
+            {product.type === 'stock' ? `$${product.nav.toFixed(2)}` : product.nav.toFixed(4)}
           </p>
           <div className="flex items-center gap-2">
             <span className={`text-sm font-semibold ${isUp ? 'text-apple-red' : 'text-apple-green'}`}>
@@ -81,7 +78,7 @@ export default function ProductDetail() {
                 tickLine={false}
                 axisLine={false}
                 width={50}
-                tickFormatter={v => `¥${Number(v).toFixed(2)}`}
+                tickFormatter={v => `$${Number(v).toFixed(2)}`}
               />
               <Tooltip
                 contentStyle={{ background: 'white', border: 'none', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}

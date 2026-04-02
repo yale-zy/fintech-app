@@ -77,14 +77,14 @@ function HoldingWidget({ h, index, onClick }) {
       </div>
       <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{h.product.name}</p>
       <div>
-        <p className="text-lg font-bold text-gray-900">¥{h.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+        <p className="text-lg font-bold text-gray-900">${h.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
         <p className={`text-xs mt-0.5 ${isUp ? 'text-apple-red' : 'text-apple-green'}`}>
-          {isUp ? '+' : ''}¥{h.profit.toFixed(2)}
+          {isUp ? '+' : ''}${h.profit.toFixed(2)}
         </p>
       </div>
       <div className="text-xs text-apple-gray-1 space-y-0.5">
         <p>{t('assets.shares')} {h.shares.toLocaleString()}</p>
-        <p>{t('assets.cost')} ¥{h.costValue.toFixed(2)}</p>
+        <p>{t('assets.cost')} ${h.costValue.toFixed(2)}</p>
       </div>
     </div>
   )
@@ -124,7 +124,7 @@ function TransactionRow({ tx, isLast }) {
         </div>
         <div className="text-right ml-3 flex-shrink-0">
           <p className={`text-sm font-semibold ${isBuy ? 'text-apple-red' : 'text-apple-green'}`}>
-            {isBuy ? '-' : '+'}¥{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            {isBuy ? '-' : '+'}${tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-apple-gray-1 mt-0.5">{tx.shares} {t('assets.shares').toLowerCase()}</p>
           {tx.statusHistory && (
@@ -139,6 +139,37 @@ function TransactionRow({ tx, isLast }) {
       </div>
       {expanded && tx.statusHistory && (
         <div className="px-4 bg-apple-gray-6 border-t border-apple-gray-5">
+          {/* Trade details */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 pb-3 border-b border-apple-gray-5">
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeDate')}</p>
+              <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.date}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeId')}</p>
+              <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.id}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.status')}</p>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold mt-0.5 ${cfg.bg} ${cfg.text}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                {t(cfg.key)}
+              </span>
+            </div>
+            <div className="col-span-2 flex gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('product.orderId')}</p>
+                <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.orderId}</p>
+              </div>
+              {tx.orderStatus && (
+                <div className="flex-1">
+                  <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('order.status')}</p>
+                  <p className="text-xs font-medium text-gray-800 mt-0.5">{t(`order.orderStatus.${tx.orderStatus}`)}</p>
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Status history */}
           <p className="text-xs font-semibold text-apple-gray-1 uppercase tracking-wide pt-3 mb-1">
             {t('order.statusHistory')}
           </p>
@@ -170,19 +201,6 @@ function TransactionFilters({ filters, onChange }) {
   const { t } = useTranslation()
   return (
     <div className="space-y-2">
-      {/* Search */}
-      <div className="relative">
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-apple-gray-2" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input
-          value={filters.keyword}
-          onChange={e => onChange({ ...filters, keyword: e.target.value })}
-          placeholder={t('filter.searchProduct')}
-          className="w-full bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-apple-blue/30 border border-apple-gray-5"
-        />
-      </div>
-
       <div className="flex gap-2">
         {/* Type filter */}
         <div className="flex bg-white rounded-xl border border-apple-gray-5 overflow-hidden flex-shrink-0">
@@ -227,7 +245,7 @@ function TransactionFilters({ filters, onChange }) {
       </div>
 
       {/* Active filter count + clear */}
-      {(filters.keyword || filters.type || filters.dateFrom || filters.dateTo) && (
+      {(filters.type || filters.dateFrom || filters.dateTo) && (
         <button
           onClick={() => onChange({ keyword: '', type: '', dateFrom: '', dateTo: '' })}
           className="text-xs text-apple-blue hover:underline"
@@ -242,10 +260,6 @@ function TransactionFilters({ filters, onChange }) {
 function applyFilters(transactions, filters) {
   return transactions.filter(tx => {
     if (filters.type && tx.type !== filters.type) return false
-    if (filters.keyword) {
-      const kw = filters.keyword.toLowerCase()
-      if (!tx.product?.name.toLowerCase().includes(kw) && !tx.productId.toLowerCase().includes(kw)) return false
-    }
     if (filters.dateFrom && tx.date < filters.dateFrom) return false
     if (filters.dateTo && tx.date.slice(0, 10) > filters.dateTo) return false
     return true

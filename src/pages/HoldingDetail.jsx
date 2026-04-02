@@ -68,9 +68,9 @@ function ProductInfoPopover({ p, t }) {
           </div>
           {[
             { label: t('product.risk'),        value: t(`risk.${p.risk.replace('-', '')}`) || p.risk },
-            { label: t('product.minAmount'),   value: `¥${p.minAmount.toLocaleString()}` },
+            { label: t('product.minAmount'),   value: `$${p.minAmount.toLocaleString()}` },
             p.annualReturn != null && { label: t('product.annualReturn'), value: `${p.annualReturn}%` },
-            { label: t('product.nav'),         value: `¥${p.nav.toFixed(4)}` },
+            { label: t('product.nav'),         value: `$${p.nav.toFixed(4)}` },
           ].filter(Boolean).map(item => (
             <div key={item.label} className="flex justify-between">
               <span className="text-apple-gray-1">{item.label}</span>
@@ -93,12 +93,12 @@ function ChartTooltip({ active, payload, t }) {
   return (
     <div className="bg-white rounded-xl shadow-lg border border-apple-gray-5 px-3 py-2 text-xs min-w-[130px]">
       <p className="text-apple-gray-1 mb-1">{d.date}</p>
-      <p className="font-semibold text-gray-900">¥{Number(d.value).toFixed(4)}</p>
+      <p className="font-semibold text-gray-900">${Number(d.value).toFixed(4)}</p>
       {d.txType && (
         <div className={`mt-1.5 pt-1.5 border-t border-apple-gray-5 ${d.txType === 'buy' ? 'text-apple-red' : 'text-apple-green'}`}>
           <p className="font-semibold">{d.txType === 'buy' ? t('product.buy') : t('product.sell')}</p>
           <p className="text-apple-gray-1 mt-0.5">
-            ¥{Number(d.txAmount).toLocaleString()} · {d.txShares} {t('assets.shares').toLowerCase()}
+            ${Number(d.txAmount).toLocaleString()} · {d.txShares} {t('assets.shares').toLowerCase()}
           </p>
         </div>
       )}
@@ -144,7 +144,7 @@ function HoldingChart({ transactions }) {
   const totalDays = chartData.length
   const tickInterval = totalDays > 90 ? Math.floor(totalDays / 8) : totalDays > 30 ? 14 : 7
 
-  // render function �?Recharts calls this for every point; return SVG only for tx points
+  // render function �?Recharts calls this for every point; return SVG only for tx points
   const renderDot = (props) => {
     const { cx, cy, payload } = props
     if (!payload?.txType) return <g key={`nd-${cx}`} />
@@ -191,7 +191,7 @@ function HoldingChart({ transactions }) {
             tickLine={false}
             axisLine={false}
             width={50}
-            tickFormatter={v => `¥${Number(v).toFixed(2)}`}
+            tickFormatter={v => `$${Number(v).toFixed(2)}`}
           />
           <Tooltip content={<ChartTooltip t={t} />} />
           <Line
@@ -231,10 +231,10 @@ function TransactionRow({ tx }) {
         </div>
         <div className="text-right ml-3 flex-shrink-0">
           <p className="text-sm font-semibold text-gray-900">
-            {isBuy ? '-' : '+'}¥{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            {isBuy ? '-' : '+'}${tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-apple-gray-1 mt-0.5">
-            {tx.shares} {t('assets.shares').toLowerCase()} @ ¥{tx.nav}
+            {tx.shares} {t('assets.shares').toLowerCase()} @ ${tx.nav}
           </p>
           <svg
             className={`w-3.5 h-3.5 text-apple-gray-3 mt-1 ml-auto transition-transform ${expanded ? 'rotate-180' : ''}`}
@@ -293,16 +293,16 @@ export default function HoldingDetail() {
             <ProductInfoPopover p={p} t={t} />
           </div>
           <p className="text-3xl font-bold text-gray-900 mb-1">
-            ¥{holding.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            ${holding.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
           <p className={`text-sm font-medium ${isUp ? 'text-apple-red' : 'text-apple-green'}`}>
-            {isUp ? '+' : ''}¥{holding.profit.toFixed(2)} ({isUp ? '+' : ''}{holding.profitRate.toFixed(2)}%)
+            {isUp ? '+' : ''}${holding.profit.toFixed(2)} ({isUp ? '+' : ''}{holding.profitRate.toFixed(2)}%)
           </p>
           <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-apple-gray-5">
             {[
               { label: t('assets.shares'),  value: holding.shares.toLocaleString() },
-              { label: t('assets.cost'),    value: `¥${holding.costValue.toFixed(2)}` },
-              { label: t('assets.costNav'), value: `¥${holding.costNav.toFixed(4)}` },
+              { label: t('assets.cost'),    value: `$${holding.costValue.toFixed(2)}` },
+              { label: t('assets.costNav'), value: `$${holding.costNav.toFixed(4)}` },
             ].map(item => (
               <div key={item.label}>
                 <p className="text-xs text-apple-gray-1 mb-0.5">{item.label}</p>
