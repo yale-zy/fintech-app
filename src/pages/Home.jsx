@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+
 import { productApi } from '../api'
 import usePortfolioStore from '../store/usePortfolioStore'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -9,7 +9,6 @@ import TradeModal from '../components/TradeModal'
 import { STATUS_CONFIG } from '../constants/orderStatus'
 
 const STATUS_CFG = STATUS_CONFIG
-const PIE_COLORS = ['#971b2f', '#34C759', '#e67e22', '#AF52DE', '#AEAEB2']
 
 function AssetSummary({ summary, accounts, transactions }) {
   const { t } = useTranslation()
@@ -23,47 +22,24 @@ function AssetSummary({ summary, accounts, transactions }) {
   const isUp = summary.totalProfit >= 0
   const todayUp = todayPnl >= 0
 
-  const pieData = [
-    { name: t('account.totalBalance'), value: totalAccountBalance },
-    { name: t('home.onHolding'),       value: onHolding },
-  ].filter(d => d.value > 0)
-
   return (
     <div className="bg-white rounded-2xl border border-apple-gray-5 px-5 py-4">
-      <div className="flex items-start gap-4">
-        <div className="flex-1 min-w-0">
-            <div className="mb-4">
-            <p className="text-xs text-apple-gray-1 mb-1">{t('profile.totalAsset')}</p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight">
-                {totalAccountBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-          <div className="border-t border-apple-gray-5 pt-3 grid grid-cols-2 gap-x-4 gap-y-2">
-            {[
-              { label: t('home.onHolding'), value: `$${onHolding.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: PIE_COLORS[1] },
-            ].map(item => (
-              <div key={item.label} className="flex items-start gap-1.5">
-                <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ background: item.color }} />
-                <div>
-                  <p className="text-xs text-apple-gray-1">{item.label}</p>
-                  <p className="text-sm font-semibold text-gray-900">{item.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="flex items-center justify-between gap-6">
+        <div className="flex-1">
+          <p className="text-xs text-apple-gray-1 mb-1">{t('profile.totalAsset')}</p>
+          <p className="text-2xl font-bold text-gray-900 tracking-tight">
+            {totalAccountBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </p>
         </div>
-        <div className="flex-shrink-0 w-28 h-28">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={pieData} dataKey="value" cx="50%" cy="50%" innerRadius={28} outerRadius={52} strokeWidth={2}>
-                {pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-              </Pie>
-              <Tooltip
-                contentStyle={{ background: 'white', border: 'none', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.1)', fontSize: 11 }}
-                formatter={v => [`$${Number(v).toLocaleString(undefined, { minimumFractionDigits: 2 })}`]}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="w-px h-10 bg-apple-gray-5 flex-shrink-0" />
+        <div className="flex-1">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#34C759' }} />
+            <p className="text-xs text-apple-gray-1">{t('home.onHolding')}</p>
+          </div>
+          <p className="text-lg font-semibold text-gray-900">
+            {onHolding.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </p>
         </div>
       </div>
     </div>
