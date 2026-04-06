@@ -1,6 +1,6 @@
 import axios from 'axios'
 import config from '../config'
-import { mockHandler } from './mock/handlers'
+import { mockHandler, resolveMockKey, mockedEndpoints } from './mock/handlers'
 
 const http = axios.create({
   baseURL: config.apiBaseUrl,
@@ -8,30 +8,30 @@ const http = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Request interceptor — attach auth token
-http.interceptors.request.use(cfg => {
+// Request interceptor — attach token, short-circuit with mock if endpoint is in mockedEndpoints
+http.interceptors.request.use(async cfg => {
   const token = localStorage.getItem('token')
   if (token) cfg.headers.Authorization = `Bearer ${token}`
+
+  const label = resolveMockKey(cfg)
+  if (label && mockedEndpoints.has(label)) {
+    try {
+      const { data } = await mockHandler(cfg)
+      return Promise.reject({ isMockIntercepted: true, mockResult: data })
+    } catch (e) {
+      if (e.isMockIntercepted) return Promise.reject(e)
+      return Promise.reject(e)
+    }
+  }
+
   return cfg
 })
 
-// Response interceptor — mock or real
 http.interceptors.response.use(
   res => res.data,
   async err => {
-    const req = err.config
+    if (err.isMockIntercepted) return err.mockResult
 
-    // If mock mode is on, intercept the failed/pending request and return mock data
-    if (config.useMock && req) {
-      try {
-        const mockResult = await mockHandler(req)
-        return mockResult
-      } catch (mockErr) {
-        return Promise.reject(mockErr)
-      }
-    }
-
-    // Real error handling
     const status = err.response?.status
     if (status === 401) {
       localStorage.removeItem('token')
@@ -40,24 +40,5 @@ http.interceptors.response.use(
     return Promise.reject(err.response?.data || err)
   }
 )
-
-// When mock mode is on, intercept before the request even goes out
-if (config.useMock) {
-  http.interceptors.request.use(async cfg => {
-    const mockResult = await mockHandler(cfg)
-    // Return a resolved response so the response interceptor's success path runs
-    return Promise.reject({
-      config: cfg,
-      isMockIntercepted: true,
-      mockResult,
-    })
-  })
-
-  // Catch the mock-intercepted "error" and resolve it
-  http.interceptors.response.use(undefined, async err => {
-    if (err.isMockIntercepted) return err.mockResult
-    return Promise.reject(err)
-  })
-}
 
 export default http

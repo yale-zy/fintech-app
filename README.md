@@ -31,7 +31,6 @@ cp .env.example .env
 
 | Variable | Description |
 |---|---|
-| `VITE_USE_MOCK` | `true` to use mock data, `false` for real HTTP calls |
 | `VITE_API_BASE_URL` | Base URL for the backend API |
 | `VITE_ENV` | Environment name (`dev`, `qa`, `uat`, `production`) |
 
@@ -39,10 +38,42 @@ Environment files (all gitignored):
 
 ```
 .env            # local overrides
-.env.dev        # dev defaults (mock on)
+.env.dev        # dev defaults
 .env.qa         # QA API
 .env.uat        # UAT API
 .env.production # production API
+```
+
+## Mock Configuration
+
+Mock is configured per-endpoint in `src/api/mock/handlers.js` — no env vars needed.
+
+```js
+export const mockedEndpoints = new Set([
+  'POST /auth/login',
+  'GET /products',
+  // 'GET /products/:id',  ← commented out = hits real API
+  ...
+])
+```
+
+- Entry present → mocked (returns data from `src/api/mock/endpoints/<key>/response.json`)
+- Entry commented out or deleted → real API
+
+To add or edit mock response data, open the corresponding `response.json`:
+
+```
+src/api/mock/endpoints/
+  auth_login/response.json
+  auth_profile/response.json
+  products/response.json
+  products_detail/response.json
+  portfolio_holdings/response.json
+  portfolio_summary/response.json
+  portfolio_transactions/response.json
+  portfolio_accounts/response.json
+  trade_buy/response.json
+  trade_sell/response.json
 ```
 
 ## Project Structure
@@ -52,7 +83,8 @@ src/
   api/
     http.js           # axios instance + mock interceptor
     mock/
-      handlers.js     # mock route table
+      handlers.js     # mockedEndpoints config + route table
+      endpoints/      # per-endpoint mock response JSON files
     services/
       auth.js         # /auth/login, /auth/profile
       product.js      # /products, /products/:id

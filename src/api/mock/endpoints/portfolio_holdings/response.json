@@ -1,0 +1,25 @@
+[
+  {
+    "productId": "p001",
+    "shares": 1000,
+    "costNav": 2.12,
+    "buyDate": "2024-01-15",
+    "currentValue": 2345.1,
+    "costValue": 2120.0,
+    "profit": 225.1,
+    "profitRate": 10.62,
+    "product": {
+      "id": "p001",
+      "type": "fund",
+      "name": "EF Blue Chip Select Mixed",
+      "code": "005827",
+      "category": "Mixed",
+      "risk": "med-high",
+      "nav": 2.3451,
+      "change": 0.0234,
+      "changeRate": 1.01,
+      "minAmount": 100,
+      "annualReturn": 28.5
+    }
+  }
+]

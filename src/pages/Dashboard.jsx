@@ -1,24 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts'
 import useAuthStore from '../store/useAuthStore'
 import usePortfolioStore from '../store/usePortfolioStore'
 import LoadingSpinner from '../components/LoadingSpinner'
-
-function generateAssetTrend() {
-  const data = []
-  let val = 95000
-  for (let i = 30; i >= 0; i--) {
-    val = val * (1 + (Math.random() - 0.46) * 0.015)
-    const d = new Date()
-    d.setDate(d.getDate() - i)
-    data.push({ date: d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }), value: Math.round(val) })
-  }
-  return data
-}
-
-const trendData = generateAssetTrend()
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -91,44 +76,24 @@ export default function Dashboard() {
               <div className="text-center px-2">
                 <p className="text-apple-gray-1 text-xs mb-1">{t('dashboard.investedAsset')}</p>
                 <p className="text-gray-900 font-semibold text-sm">
-                  {hideAmount ? '****' : `$${summary.totalAsset.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
+                  {hideAmount ? '****' : `${summary.totalAsset.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
                 </p>
               </div>
               <div className="text-center px-2">
                 <p className="text-apple-gray-1 text-xs mb-1">{t('dashboard.availableCash')}</p>
                 <p className="text-gray-900 font-semibold text-sm">
-                  {hideAmount ? '****' : `$${summary.cash.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
+                  {hideAmount ? '****' : `${summary.cash.toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`}
                 </p>
               </div>
               <div className="text-center px-2">
                 <p className="text-apple-gray-1 text-xs mb-1">{t('dashboard.todayPnl')}</p>
                 <p className={`font-semibold text-sm ${summary.totalProfit >= 0 ? 'text-apple-red' : 'text-apple-green'}`}>
-                  {hideAmount ? '****' : `${summary.totalProfit >= 0 ? '+' : ''}$${(summary.totalProfit * 0.03).toFixed(2)}`}
+                  {hideAmount ? '****' : `${summary.totalProfit >= 0 ? '+' : ''}${(summary.totalProfit * 0.03).toFixed(2)}`}
                 </p>
               </div>
             </div>
           </div>
         )}
-
-        {/* Trend chart */}
-        <div className="card p-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('dashboard.trendTitle')}</h3>
-          <ResponsiveContainer width="100%" height={120}>
-            <AreaChart data={trendData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="assetGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#971b2f" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#971b2f" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area type="monotone" dataKey="value" stroke="#971b2f" strokeWidth={2} fill="url(#assetGrad)" dot={false} />
-              <Tooltip
-                contentStyle={{ background: 'white', border: 'none', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
-                formatter={(v) => [`$${v.toLocaleString()}`, t('dashboard.totalAssetLabel')]}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
 
         {/* Holdings */}
         <div className="card overflow-hidden">

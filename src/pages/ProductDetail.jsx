@@ -1,11 +1,60 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts'
 import { productApi, portfolioApi } from '../api'
 import TradeModal from '../components/TradeModal'
 import RiskBadge from '../components/RiskBadge'
 import LoadingSpinner from '../components/LoadingSpinner'
+
+function InfoPopover({ product }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+
+  const rows = [
+    { label: t('product.minTradeAmount'),     value: product.minTradeAmount?.toLocaleString() },
+    { label: t('product.pricingModel'),       value: product.pricingModel },
+    { label: t('product.settlementCurrency'), value: product.settlementCurrency },
+    { label: t('product.settlementCycle'),    value: product.settlementCycle },
+    { label: t('product.managementFee'),      value: product.managementFee },
+    { label: t('product.custodianFee'),       value: product.custodianFee },
+  ].filter(r => r.value != null)
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`flex items-center gap-1 text-xs font-medium transition-colors ${open ? 'text-apple-blue' : 'text-apple-gray-2 hover:text-apple-blue'}`}
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {t('product.moreInfo')}
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-7 w-72 bg-white rounded-2xl shadow-xl border border-apple-gray-5 p-4 z-20 text-xs space-y-2.5">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-sm font-semibold text-gray-900">{product.name}</p>
+              <button onClick={() => setOpen(false)} className="text-apple-gray-3 hover:text-gray-500">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            {rows.map(row => (
+              <div key={row.label} className="flex justify-between gap-4">
+                <span className="text-apple-gray-1 flex-shrink-0">{row.label}</span>
+                <span className="font-semibold text-gray-900 text-right">{row.value}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -28,8 +77,13 @@ export default function ProductDetail() {
   const infoRows = [
     { label: t('product.category'),    value: product.category },
     { label: t('product.risk'),        value: <RiskBadge risk={product.risk} /> },
-    { label: t('product.minAmount'),   value: `$${product.minAmount.toLocaleString()}` },
-    product.annualReturn && { label: t('product.annualReturn'), value: <span className="text-apple-red font-medium">+{product.annualReturn}%</span> },
+    { label: t('product.assetType'),   value: product.assetType },
+    { label: t('product.issuer'),      value: product.issuer },
+    { label: t('product.exchange'),    value: product.exchange },
+    product.annualReturn != null && { label: t('product.annualReturn'), value: <span className="text-apple-red font-medium">+{product.annualReturn}%</span> },
+    { label: t('product.minAmount'),   value: product.minAmount?.toLocaleString() },
+    product.pegCurrency && { label: t('product.pegCurrency'), value: product.pegCurrency },
+    product.pegRatio    && { label: t('product.pegRatio'),    value: product.pegRatio },
     { label: t('product.description'), value: product.description },
   ].filter(Boolean)
 
@@ -54,10 +108,9 @@ export default function ProductDetail() {
       <div className="px-4 space-y-4">
         {/* Price card */}
         <div className="bg-white rounded-2xl p-5 border border-apple-gray-5">
-
           <p className="text-sm font-medium text-gray-700 mb-1">{product.name}</p>
           <p className="text-3xl font-bold text-gray-900 mb-1">
-            {product.type === 'stock' ? `$${product.nav.toFixed(2)}` : product.nav.toFixed(4)}
+            {product.type === 'stock' ? `${product.nav.toFixed(2)}` : product.nav.toFixed(4)}
           </p>
           <div className="flex items-center gap-2">
             <span className={`text-sm font-semibold ${isUp ? 'text-apple-red' : 'text-apple-green'}`}>
@@ -69,40 +122,14 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Chart */}
-        <div className="bg-white rounded-2xl p-4 border border-apple-gray-5">
-          <p className="text-sm font-semibold text-gray-900 mb-3">{t('product.recentTrend')}</p>
-          <ResponsiveContainer width="100%" height={160}>
-            <LineChart data={product.chartData} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#AEAEB2' }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-              <YAxis
-                tick={{ fontSize: 10, fill: '#AEAEB2' }}
-                tickLine={false}
-                axisLine={false}
-                width={50}
-                tickFormatter={v => `$${Number(v).toFixed(2)}`}
-              />
-              <Tooltip
-                contentStyle={{ background: 'white', border: 'none', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
-                formatter={v => [v.toFixed(4), t('product.nav')]}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke={isUp ? '#971b2f' : '#34C759'}
-                strokeWidth={1.5}
-                dot={false}
-                activeDot={{ r: 4, stroke: 'white', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
         {/* Product info */}
         <div>
-          <p className="text-xs font-semibold text-apple-gray-1 uppercase tracking-wide mb-2 px-1">
-            {t('product.productInfo')}
-          </p>
+          <div className="flex items-center justify-between mb-2 px-1">
+            <p className="text-xs font-semibold text-apple-gray-1 uppercase tracking-wide">
+              {t('product.productInfo')}
+            </p>
+            <InfoPopover product={product} />
+          </div>
           <div className="bg-white rounded-2xl border border-apple-gray-5 overflow-hidden">
             {infoRows.map((item, i) => (
               <div key={item.label} className={`flex items-start justify-between px-4 py-3.5 ${i < infoRows.length - 1 ? 'border-b border-apple-gray-5' : ''}`}>
@@ -136,4 +163,3 @@ export default function ProductDetail() {
     </div>
   )
 }
-

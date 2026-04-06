@@ -1,9 +1,14 @@
 import http from '../http'
+import { mapProduct, mapProductList } from '../mappers/product.mapper'
 
 export const productApi = {
-  getList: (params = {}) =>
-    http.get('/products', { params }),
+  getList: async (params = {}) => {
+    const data = await http.get('/products', { params })
+    return mapProductList(data)
+  },
 
-  getDetail: (id) =>
-    http.get(`/products/${id}`),
+  getDetail: async (id) => {
+    const data = await http.get(`/products/${id}`)
+    return mapProduct(data)
+  },
 }

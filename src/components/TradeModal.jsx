@@ -10,6 +10,9 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [tradeStatus, setTradeStatus] = useState(null)
+  const [statusLoading, setStatusLoading] = useState(false)
+  const [statusError, setStatusError] = useState('')
 
   const handleTrade = async () => {
     if (!selectedAccount) {
@@ -31,6 +34,26 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
     }
   }
 
+  const handleCheckStatus = async () => {
+    if (!result?.tradeId) return
+    setStatusError('')
+    setStatusLoading(true)
+    try {
+      const status = await tradeApi.getStatus(result.tradeId)
+      setTradeStatus(status)
+    } catch (e) {
+      setStatusError(e.message)
+    } finally {
+      setStatusLoading(false)
+    }
+  }
+
+  const statusColor = {
+    filled:   'text-apple-green',
+    pending:  'text-apple-blue',
+    rejected: 'text-apple-red',
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
@@ -47,7 +70,7 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
               {mode === 'buy' ? t('product.buySuccess') : t('product.sellSuccess')}
             </h3>
             <p className="text-apple-gray-1 text-sm mb-4">{result.message}</p>
-            <div className="bg-apple-gray-6 rounded-2xl p-4 text-left space-y-2 mb-6">
+            <div className="bg-apple-gray-6 rounded-2xl p-4 text-left space-y-2 mb-4">
               {[
                 { label: t('trade.tradeId'),         value: result.tradeId },
                 { label: t('trade.action'),           value: result.action },
@@ -65,6 +88,50 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
                 </div>
               ))}
             </div>
+
+            {/* Trade status section */}
+            {tradeStatus ? (
+              <div className="bg-apple-gray-6 rounded-2xl p-4 text-left mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-semibold text-gray-900">{t('trade.statusTitle')}</span>
+                  <button
+                    onClick={handleCheckStatus}
+                    disabled={statusLoading}
+                    className="text-xs text-apple-blue font-medium disabled:opacity-50"
+                  >
+                    {statusLoading ? '...' : t('trade.refresh')}
+                  </button>
+                </div>
+                <div className="flex justify-between text-sm mb-3">
+                  <span className="text-apple-gray-1">{t('trade.status')}</span>
+                  <span className={`font-semibold text-xs ${statusColor[tradeStatus.status] || 'text-gray-900'}`}>
+                    {t(`trade.statusLabel.${tradeStatus.status}`, tradeStatus.status)}
+                  </span>
+                </div>
+                {tradeStatus.statusHistory.length > 0 && (
+                  <div className="space-y-1.5 border-t border-apple-gray-5 pt-3">
+                    {tradeStatus.statusHistory.map((h, i) => (
+                      <div key={i} className="flex justify-between text-xs text-apple-gray-1">
+                        <span>{t(`trade.statusLabel.${h.status}`, h.status)}</span>
+                        <span>{h.timestamp}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={handleCheckStatus}
+                disabled={statusLoading}
+                className="w-full mb-3 py-3 rounded-xl border border-apple-blue text-apple-blue font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {statusLoading
+                  ? <div className="w-4 h-4 border-2 border-apple-blue/40 border-t-apple-blue rounded-full animate-spin" />
+                  : t('trade.checkStatus')}
+              </button>
+            )}
+            {statusError && <p className="text-apple-red text-xs mb-3">{statusError}</p>}
+
             <button onClick={onClose} className="btn-primary w-full">{t('common.done')}</button>
           </div>
         ) : (
@@ -117,8 +184,7 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
                   onChange={e => { const v = e.target.value; if (v === '' || parseFloat(v) > 0) setAmount(v) }}
                   min="0.000001"
                   onKeyDown={e => (e.key === '-' || e.key === 'e') && e.preventDefault()}
-                  placeholder={t('product.buyAmountPlaceholder', { min: product.minAmount })}
-                  className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30"
+                  placeholder={t('product.buyAmountPlaceholder', { min: product.minAmount })}                  className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30"
                 />
                 <div className="flex gap-2 mt-3">
                   {[1000, 5000, 10000, 50000].map(v => (
@@ -134,10 +200,17 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
                 <input
                   type="number"
                   value={shares}
-                  onChange={e => setShares(e.target.value)}
+                  onChange={e => {
+                    const v = e.target.value
+                    if (v === '' || (Number.isInteger(parseFloat(v)) && parseFloat(v) >= 1)) setShares(v)
+                  }}
+                  min="1"
+                  step="1"
+                  onKeyDown={e => (e.key === '-' || e.key === 'e' || e.key === '.') && e.preventDefault()}
                   placeholder={t('product.sellSharesPlaceholder')}
                   className="mt-2 w-full bg-apple-gray-6 rounded-xl px-4 py-3 text-2xl font-semibold outline-none focus:ring-2 focus:ring-apple-blue/30"
                 />
+                <p className="text-xs text-apple-gray-2 mt-1.5">{t('product.minSellShares')}</p>
               </div>
             )}
             {error && <p className="text-apple-red text-sm mt-3">{error}</p>}

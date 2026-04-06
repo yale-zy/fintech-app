@@ -1,0 +1,54 @@
+[
+  {
+    "id": "t001", "orderId": "ORD20240115001", "orderStatus": "filled",
+    "productId": "p001", "type": "buy", "amount": 2120, "shares": 1000, "nav": 2.12,
+    "date": "2024-01-15 10:23", "status": "success",
+    "accountNo": "FA-2024-001827",
+    "statusHistory": [
+      { "status": "purchasing", "time": "2024-01-15 10:23" },
+      { "status": "success", "time": "2024-01-16 09:00" }
+    ],
+    "product": { "id": "p001", "name": "EF Blue Chip Select Mixed", "code": "005827", "type": "fund" }
+  },
+  {
+    "id": "t002", "orderId": "ORD20240210002", "orderStatus": "filled",
+    "productId": "p002", "type": "buy", "amount": 10000, "shares": 9503, "nav": 1.0523,
+    "date": "2024-02-10 09:15", "status": "success",
+    "accountNo": "WA-2024-002001",
+    "statusHistory": [
+      { "status": "purchasing", "time": "2024-02-10 09:15" },
+      { "status": "success", "time": "2024-02-11 09:00" }
+    ],
+    "product": { "id": "p002", "name": "CMB Wealth Stable", "code": "ZY2024001", "type": "wealth" }
+  },
+  {
+    "id": "t003", "orderId": "ORD20240502003", "orderStatus": "filled",
+    "productId": "p001", "type": "sell", "amount": 500, "shares": 210, "nav": 2.38,
+    "date": "2024-05-02 13:45", "status": "success",
+    "accountNo": "FA-2024-001827",
+    "statusHistory": [
+      { "status": "purchasing", "time": "2024-05-02 13:45" },
+      { "status": "success", "time": "2024-05-05 09:00" }
+    ],
+    "product": { "id": "p001", "name": "EF Blue Chip Select Mixed", "code": "005827", "type": "fund" }
+  },
+  {
+    "id": "t004", "orderId": "ORD20240715004", "orderStatus": "pending",
+    "productId": "p001", "type": "buy", "amount": 3000, "shares": 1279, "nav": 2.3451,
+    "date": "2024-07-15 09:15", "status": "purchasing",
+    "accountNo": "FA-2024-001827",
+    "statusHistory": [{ "status": "purchasing", "time": "2024-07-15 09:15" }],
+    "product": { "id": "p001", "name": "EF Blue Chip Select Mixed", "code": "005827", "type": "fund" }
+  },
+  {
+    "id": "t005", "orderId": "ORD20240801005", "orderStatus": "rejected",
+    "productId": "p002", "type": "buy", "amount": 20000, "shares": 19007, "nav": 1.0523,
+    "date": "2024-08-01 10:30", "status": "failed",
+    "accountNo": "WA-2024-002001",
+    "statusHistory": [
+      { "status": "purchasing", "time": "2024-08-01 10:30" },
+      { "status": "failed", "time": "2024-08-01 15:00" }
+    ],
+    "product": { "id": "p002", "name": "CMB Wealth Stable", "code": "ZY2024001", "type": "wealth" }
+  }
+]

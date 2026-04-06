@@ -1,15 +1,24 @@
 import http from '../http'
+import { mapHoldingList, mapSummary, mapTransactionList, mapAccountList } from '../mappers/portfolio.mapper'
 
 export const portfolioApi = {
-  getHoldings: () =>
-    http.get('/portfolio/holdings'),
+  getHoldings: async () => {
+    const data = await http.get('/portfolio/holdings')
+    return mapHoldingList(data)
+  },
 
-  getAssetSummary: () =>
-    http.get('/portfolio/summary'),
+  getAssetSummary: async () => {
+    const data = await http.get('/portfolio/summary')
+    return mapSummary(data)
+  },
 
-  getTransactions: () =>
-    http.get('/portfolio/transactions'),
+  getTransactions: async () => {
+    const data = await http.get('/portfolio/transactions')
+    return mapTransactionList(data)
+  },
 
-  getProductAccounts: () =>
-    http.get('/portfolio/accounts'),
+  getProductAccounts: async () => {
+    const data = await http.get('/portfolio/accounts')
+    return mapAccountList(data)
+  },
 }

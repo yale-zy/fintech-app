@@ -1,0 +1,20 @@
+[
+  {
+    "id": "acc001",
+    "productId": "p001",
+    "accountNo": "FA-2024-001827",
+    "customerNumber": "CUST-001827",
+    "balance": 2345.1,
+    "currency": "CNY",
+    "product": { "id": "p001", "name": "EF Blue Chip Select Mixed", "code": "005827", "type": "fund" }
+  },
+  {
+    "id": "acc002",
+    "productId": "p002",
+    "accountNo": "WA-2024-002001",
+    "customerNumber": "CUST-001827",
+    "balance": 10523.0,
+    "currency": "CNY",
+    "product": { "id": "p002", "name": "CMB Wealth Stable", "code": "ZY2024001", "type": "wealth" }
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "tradeId": "TRD_PLACEHOLDER",
+  "action": "BUY",
+  "customerNumber": "CUST-001827",
+  "accountNumber": "FA-2024-001827",
+  "accountType": "Fund Account",
+  "orderId": "ORD_PLACEHOLDER",
+  "asset": "EF Blue Chip Select Mixed",
+  "assetAmount": 42.6,
+  "tradeDate": "2024-01-15 10:23",
+  "message": "Purchase submitted. Shares confirmed T+1."
+}

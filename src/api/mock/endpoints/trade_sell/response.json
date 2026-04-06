@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "tradeId": "TRD_PLACEHOLDER",
+  "action": "SELL",
+  "customerNumber": "CUST-001827",
+  "accountNumber": "FA-2024-001827",
+  "accountType": "Fund Account",
+  "orderId": "ORD_PLACEHOLDER",
+  "asset": "EF Blue Chip Select Mixed",
+  "assetAmount": 100,
+  "tradeDate": "2024-01-15 10:23",
+  "message": "Redemption submitted. Funds arrive T+3."
+}
