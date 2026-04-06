@@ -11,19 +11,18 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
 
-  const chosenAccount = accounts.find(a => a.id === selectedAccount)
-
   const handleTrade = async () => {
-    if (mode === 'buy' && !selectedAccount) {
+    if (!selectedAccount) {
       setError(t('account.selectRequired'))
       return
     }
+    const acc = accounts.find(a => a.id === selectedAccount)
     setError('')
     setLoading(true)
     try {
       const res = mode === 'buy'
-        ? await tradeApi.buy({ productId: product.id, amount: parseFloat(amount), accountId: selectedAccount })
-        : await tradeApi.sell({ productId: product.id, shares: parseFloat(shares) })
+        ? await tradeApi.buy({ customerNumber: acc?.customerNumber, accountNumber: acc?.accountNo, amount: parseFloat(amount) })
+        : await tradeApi.sell({ customerNumber: acc?.customerNumber, accountNumber: acc?.accountNo, shares: parseFloat(shares) })
       setResult(res)
     } catch (e) {
       setError(e.message)
@@ -50,13 +49,15 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
             <p className="text-apple-gray-1 text-sm mb-4">{result.message}</p>
             <div className="bg-apple-gray-6 rounded-2xl p-4 text-left space-y-2 mb-6">
               {[
-                { label: t('trade.tradeId'),       value: result.orderId },
-                { label: t('trade.tradeDate'),      value: result.tradeDate },
-                { label: t('trade.action'),         value: result.action },
-                { label: t('trade.status'),         value: result.status },
-                { label: t('trade.assetAmount'),    value: result.assetAmount },
-                { label: t('trade.paymentAmount'),  value: `$${result.paymentAmount}` },
-                { label: t('trade.paymentAction'),  value: result.paymentAction },
+                { label: t('trade.tradeId'),         value: result.tradeId },
+                { label: t('trade.action'),           value: result.action },
+                { label: t('trade.customerNumber'),   value: result.customerNumber },
+                { label: t('account.number'),         value: result.accountNumber },
+                { label: t('trade.accountType'),      value: result.accountType },
+                { label: t('product.orderId'),        value: result.orderId },
+                { label: t('trade.asset'),            value: result.asset },
+                { label: t('trade.assetAmount'),      value: result.assetAmount },
+                { label: t('trade.tradeDate'),        value: result.tradeDate },
               ].map(row => (
                 <div key={row.label} className="flex justify-between text-sm">
                   <span className="text-apple-gray-1">{row.label}</span>
@@ -73,8 +74,8 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
             </h3>
             <p className="text-apple-gray-1 text-sm mb-4">{product.name}</p>
 
-            {/* Account selector — buy only */}
-            {mode === 'buy' && accounts.length > 0 && (
+            {/* Account selector */}
+            {accounts.length > 0 && (
               <div className="mb-4">
                 <label className="text-xs text-apple-gray-1 font-medium block mb-2">{t('account.select')}</label>
                 <div className="space-y-2">
@@ -142,7 +143,7 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
             {error && <p className="text-apple-red text-sm mt-3">{error}</p>}
             <button
               onClick={handleTrade}
-              disabled={loading || (!amount && !shares)}
+              disabled={loading || !selectedAccount || (!amount && !shares)}
               className={`w-full mt-5 py-3.5 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50 ${mode === 'buy' ? 'bg-apple-blue' : 'bg-apple-green'}`}
             >
               {loading

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts'
-import { productApi } from '../api'
+import { productApi, portfolioApi } from '../api'
 import TradeModal from '../components/TradeModal'
 import RiskBadge from '../components/RiskBadge'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -13,9 +13,11 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [tradeMode, setTradeMode] = useState(null)
+  const [accounts, setAccounts] = useState([])
 
   useEffect(() => {
     productApi.getDetail(id).then(setProduct).finally(() => setLoading(false))
+    portfolioApi.getProductAccounts().then(setAccounts).catch(() => {})
   }, [id])
 
   if (loading) return <LoadingSpinner fullscreen />
@@ -130,7 +132,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {tradeMode && <TradeModal product={product} mode={tradeMode} onClose={() => setTradeMode(null)} />}
+      {tradeMode && <TradeModal product={product} mode={tradeMode} accounts={accounts} onClose={() => setTradeMode(null)} />}
     </div>
   )
 }

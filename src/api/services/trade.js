@@ -1,9 +1,9 @@
 import http from '../http'
 
 export const tradeApi = {
-  buy: ({ productId, amount }) =>
-    http.post('/trade/buy', { productId, amount }),
+  buy: ({ customerNumber, accountNumber, amount }) =>
+    http.post('/trade/buy', { customerNumber, accountNumber, action: 'BUY', amount }),
 
-  sell: ({ productId, shares }) =>
-    http.post('/trade/sell', { productId, shares }),
+  sell: ({ customerNumber, accountNumber, shares }) =>
+    http.post('/trade/sell', { customerNumber, accountNumber, action: 'SELL', amount: shares }),
 }

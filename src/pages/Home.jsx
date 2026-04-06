@@ -90,44 +90,19 @@ function TxRow({ tx }) {
               <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeId')}</p>
               <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.id}</p>
             </div>
-            <div>
-              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.status')}</p>
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold mt-0.5 ${cfg.bg} ${cfg.text}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-                {t(cfg.key)}
-              </span>
-            </div>
             <div className="col-span-2 flex gap-4">
               <div className="flex-1">
                 <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('product.orderId')}</p>
                 <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.orderId}</p>
               </div>
-              {tx.orderStatus && (
+              {tx.accountNo && (
                 <div className="flex-1">
-                  <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('order.status')}</p>
-                  <p className="text-xs font-medium text-gray-800 mt-0.5">{t(`order.orderStatus.${tx.orderStatus}`)}</p>
+                  <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('account.number')}</p>
+                  <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.accountNo}</p>
                 </div>
               )}
             </div>
           </div>
-          {/* Status history */}
-          <p className="text-xs font-semibold text-apple-gray-1 uppercase tracking-wide pt-2 mb-1">{t('order.statusHistory')}</p>
-          {tx.statusHistory.map((item, i) => {
-            const c = STATUS_CFG[item.status] || STATUS_CFG.purchasing
-            const last = i === tx.statusHistory.length - 1
-            return (
-              <div key={i} className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-0.5 ${last ? c.dot : 'bg-apple-gray-4'}`} />
-                  {!last && <span className="w-px flex-1 bg-apple-gray-5 my-1" />}
-                </div>
-                <div className="pb-2">
-                  <p className={`text-xs font-semibold ${last ? c.text : 'text-apple-gray-1'}`}>{t(c.key)}</p>
-                  <p className="text-xs text-apple-gray-2">{item.time}</p>
-                </div>
-              </div>
-            )
-          })}
         </div>
       )}
     </div>
@@ -281,7 +256,7 @@ export default function Home() {
                   holding={holdingMap[p.id] || null}
                   account={accountMap[p.id] || null}
                   onBuy={() => setTradeModal({ product: p, mode: 'buy', accounts })}
-                  onSell={() => setTradeModal({ product: p, mode: 'sell', accounts: [] })}
+                  onSell={() => setTradeModal({ product: p, mode: 'sell', accounts })}
                 />
                 <ProductTransactions txs={txByProduct[p.id] || []} />
               </div>
@@ -301,4 +276,3 @@ export default function Home() {
     </div>
   )
 }
-

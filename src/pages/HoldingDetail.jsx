@@ -18,29 +18,6 @@ function StatusBadge({ status }) {
   )
 }
 
-function StatusTimeline({ history }) {
-  const { t } = useTranslation()
-  return (
-    <div className="pt-3 pb-1">
-      {history.map((item, i) => {
-        const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG.purchasing
-        const isLast = i === history.length - 1
-        return (
-          <div key={i} className="flex gap-3">
-            <div className="flex flex-col items-center">
-              <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 mt-0.5 ${isLast ? cfg.dot : 'bg-apple-gray-4'}`} />
-              {!isLast && <span className="w-px flex-1 bg-apple-gray-5 my-1" />}
-            </div>
-            <div className="pb-3">
-              <p className={`text-xs font-semibold ${isLast ? cfg.text : 'text-apple-gray-1'}`}>{t(cfg.key)}</p>
-              <p className="text-xs text-apple-gray-2 mt-0.5">{item.time}</p>
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 function ProductInfoPopover({ p, t }) {
   const [open, setOpen] = useState(false)
@@ -245,11 +222,29 @@ function TransactionRow({ tx }) {
         </div>
       </div>
       {expanded && (
-        <div className="px-4 bg-apple-gray-6 border-t border-apple-gray-5">
-          <p className="text-xs font-semibold text-apple-gray-1 uppercase tracking-wide pt-3 mb-1">
-            {t('order.statusHistory')}
-          </p>
-          <StatusTimeline history={tx.statusHistory} />
+        <div className="px-4 bg-apple-gray-6 border-t border-apple-gray-5 pb-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 pb-3">
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeDate')}</p>
+              <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.date}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('trade.tradeId')}</p>
+              <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.id}</p>
+            </div>
+            <div className="col-span-2 flex gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('product.orderId')}</p>
+                <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.orderId}</p>
+              </div>
+              {tx.accountNo && (
+                <div className="flex-1">
+                  <p className="text-[10px] text-apple-gray-2 uppercase tracking-wide">{t('account.number')}</p>
+                  <p className="text-xs font-medium text-gray-800 mt-0.5">{tx.accountNo}</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 // Mock user data
 export const mockUsers = [
-  { id: 1, username: 'demo', password: '123456', name: 'Wei Zhang', avatar: null },
+  { id: 1, username: 'demo', password: '123456', name: 'Wei Zhang', customerNumber: 'CUST-001827', avatar: null },
 ]
 
 // Mock product data — 2 products only
@@ -38,8 +38,8 @@ export const mockHoldings = [
 
 // Product accounts — one per product, linked to the user
 export const mockProductAccounts = [
-  { id: 'acc001', productId: 'p001', accountNo: 'FA-2024-001827', balance: 2345.10, currency: 'CNY' },
-  { id: 'acc002', productId: 'p002', accountNo: 'WA-2024-002001', balance: 10523.00, currency: 'CNY' },
+  { id: 'acc001', productId: 'p001', accountNo: 'FA-2024-001827', customerNumber: 'CUST-001827', balance: 2345.10, currency: 'CNY' },
+  { id: 'acc002', productId: 'p002', accountNo: 'WA-2024-002001', customerNumber: 'CUST-001827', balance: 10523.00, currency: 'CNY' },
 ]
 
 // Mock transactions

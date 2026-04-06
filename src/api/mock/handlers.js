@@ -98,6 +98,7 @@ const routes = [
       return mockTransactions.map(t => ({
         ...t,
         product: mockProducts.find(p => p.id === t.productId),
+        accountNo: mockProductAccounts.find(a => a.productId === t.productId)?.accountNo || null,
       }))
     },
   },
@@ -117,22 +118,21 @@ const routes = [
     method: 'post', url: /^\/trade\/buy$/,
     async handler(cfg) {
       await delay(600)
-      const { productId, amount } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
-      const product = mockProducts.find(p => p.id === productId)
+      const { customerNumber, accountNumber, amount } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
+      const account = mockProductAccounts.find(a => a.accountNo === accountNumber)
+      const product = account ? mockProducts.find(p => p.id === account.productId) : null
       if (!product) throw { message: 'product_not_found', status: 404 }
       return {
         success: true,
+        tradeId: 'TRD' + Date.now(),
+        action: 'BUY',
+        customerNumber: customerNumber || account?.customerNumber,
+        accountNumber,
+        accountType: product.type === 'wealth' ? 'Wealth Account' : 'Fund Account',
         orderId: 'ORD' + Date.now(),
-        tradeDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        action: 'Buy',
-        status: 'Pending',
-        productName: product.name,
+        asset: product.name,
         assetAmount: parseFloat((amount / product.nav).toFixed(4)),
-        paymentAmount: amount,
-        paymentAction: 'Debit',
-        amount,
-        shares: parseFloat((amount / product.nav).toFixed(4)),
-        nav: product.nav,
+        tradeDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         message: 'Purchase submitted. Shares confirmed T+1.',
       }
     },
@@ -141,22 +141,21 @@ const routes = [
     method: 'post', url: /^\/trade\/sell$/,
     async handler(cfg) {
       await delay(600)
-      const { productId, shares } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
-      const product = mockProducts.find(p => p.id === productId)
+      const { customerNumber, accountNumber, amount: shares } = typeof cfg.data === 'string' ? JSON.parse(cfg.data) : cfg.data
+      const account = mockProductAccounts.find(a => a.accountNo === accountNumber)
+      const product = account ? mockProducts.find(p => p.id === account.productId) : null
       if (!product) throw { message: 'product_not_found', status: 404 }
       return {
         success: true,
+        tradeId: 'TRD' + Date.now(),
+        action: 'SELL',
+        customerNumber: customerNumber || account?.customerNumber,
+        accountNumber,
+        accountType: product.type === 'wealth' ? 'Wealth Account' : 'Fund Account',
         orderId: 'ORD' + Date.now(),
-        tradeDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        action: 'Sell',
-        status: 'Pending',
-        productName: product.name,
+        asset: product.name,
         assetAmount: shares,
-        paymentAmount: parseFloat((shares * product.nav).toFixed(2)),
-        paymentAction: 'Credit',
-        amount: parseFloat((shares * product.nav).toFixed(2)),
-        shares,
-        nav: product.nav,
+        tradeDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
         message: 'Redemption submitted. Funds arrive T+3.',
       }
     },
