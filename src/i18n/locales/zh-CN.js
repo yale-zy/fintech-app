@@ -107,7 +107,7 @@ export default {
     customerNumber: '客户号',
     accountType: '账户类型',
     asset: '资产',
-    checkStatus: '查询交易状态',
+    checkingStatus: '正在查询交易状态…',
     statusTitle: '交易状态',
     refresh: '刷新',
     statusLabel: {

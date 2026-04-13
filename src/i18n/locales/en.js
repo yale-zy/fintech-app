@@ -107,7 +107,7 @@ export default {
     customerNumber: 'Customer No.',
     accountType: 'Account Type',
     asset: 'Asset',
-    checkStatus: 'Check Trade Status',
+    checkingStatus: 'Checking trade status…',
     statusTitle: 'Trade Status',
     refresh: 'Refresh',
     statusLabel: {

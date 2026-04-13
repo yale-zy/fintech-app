@@ -107,7 +107,7 @@ export default {
     customerNumber: '客戶號',
     accountType: '帳戶類型',
     asset: '資產',
-    checkStatus: '查詢交易狀態',
+    checkingStatus: '正在查詢交易狀態…',
     statusTitle: '交易狀態',
     refresh: '重新整理',
     statusLabel: {

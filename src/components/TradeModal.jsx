@@ -11,8 +11,22 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [tradeStatus, setTradeStatus] = useState(null)
-  const [statusLoading, setStatusLoading] = useState(false)
   const [statusError, setStatusError] = useState('')
+
+  const pollStatus = async (tradeId) => {
+    const MAX_ATTEMPTS = 3
+    const INTERVAL_MS = 5000
+    for (let i = 0; i < MAX_ATTEMPTS; i++) {
+      if (i > 0) await new Promise(r => setTimeout(r, INTERVAL_MS))
+      try {
+        const status = await tradeApi.getStatus(tradeId)
+        if (status) return status
+      } catch (e) {
+        if (i === MAX_ATTEMPTS - 1) return { error: e.message }
+      }
+    }
+    return null
+  }
 
   const handleTrade = async () => {
     if (!selectedAccount) {
@@ -26,25 +40,14 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
       const res = mode === 'buy'
         ? await tradeApi.buy({ customerNumber: acc?.customerNumber, accountNumber: acc?.accountNo, amount: parseFloat(amount) })
         : await tradeApi.sell({ customerNumber: acc?.customerNumber, accountNumber: acc?.accountNo, shares: parseFloat(shares) })
+      const status = await pollStatus(res.tradeId)
+      if (status?.error) setStatusError(status.error)
+      else if (status) setTradeStatus(status)
       setResult(res)
     } catch (e) {
       setError(e.message)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleCheckStatus = async () => {
-    if (!result?.tradeId) return
-    setStatusError('')
-    setStatusLoading(true)
-    try {
-      const status = await tradeApi.getStatus(result.tradeId)
-      setTradeStatus(status)
-    } catch (e) {
-      setStatusError(e.message)
-    } finally {
-      setStatusLoading(false)
     }
   }
 
@@ -71,16 +74,25 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
             </h3>
             <p className="text-apple-gray-1 text-sm mb-4">{result.message}</p>
             <div className="bg-apple-gray-6 rounded-2xl p-4 text-left space-y-2 mb-4">
+              {tradeStatus && (
+                <div className="flex justify-between text-sm pb-2 border-b border-apple-gray-5">
+                  <span className="text-apple-gray-1">{t('trade.status')}</span>
+                  <span className={`font-semibold text-xs ${statusColor[tradeStatus.status] || 'text-gray-900'}`}>
+                    {t(`trade.statusLabel.${tradeStatus.status}`, tradeStatus.status)}
+                  </span>
+                </div>
+              )}
+              {statusError && <p className="text-apple-red text-xs">{statusError}</p>}
               {[
-                { label: t('trade.tradeId'),         value: result.tradeId },
-                { label: t('trade.action'),           value: result.action },
-                { label: t('trade.customerNumber'),   value: result.customerNumber },
-                { label: t('account.number'),         value: result.accountNumber },
-                { label: t('trade.accountType'),      value: result.accountType },
-                { label: t('product.orderId'),        value: result.orderId },
-                { label: t('trade.asset'),            value: result.asset },
-                { label: t('trade.assetAmount'),      value: result.assetAmount },
-                { label: t('trade.tradeDate'),        value: result.tradeDate },
+                { label: t('trade.tradeId'),       value: result.tradeId },
+                { label: t('trade.action'),         value: result.action },
+                { label: t('trade.customerNumber'), value: result.customerNumber },
+                { label: t('account.number'),       value: result.accountNumber },
+                { label: t('trade.accountType'),    value: result.accountType },
+                { label: t('product.orderId'),      value: result.orderId },
+                { label: t('trade.asset'),          value: result.asset },
+                { label: t('trade.assetAmount'),    value: result.assetAmount },
+                { label: t('trade.tradeDate'),      value: result.tradeDate },
               ].map(row => (
                 <div key={row.label} className="flex justify-between text-sm">
                   <span className="text-apple-gray-1">{row.label}</span>
@@ -88,49 +100,6 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
                 </div>
               ))}
             </div>
-
-            {/* Trade status section */}
-            {tradeStatus ? (
-              <div className="bg-apple-gray-6 rounded-2xl p-4 text-left mb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-gray-900">{t('trade.statusTitle')}</span>
-                  <button
-                    onClick={handleCheckStatus}
-                    disabled={statusLoading}
-                    className="text-xs text-apple-blue font-medium disabled:opacity-50"
-                  >
-                    {statusLoading ? '...' : t('trade.refresh')}
-                  </button>
-                </div>
-                <div className="flex justify-between text-sm mb-3">
-                  <span className="text-apple-gray-1">{t('trade.status')}</span>
-                  <span className={`font-semibold text-xs ${statusColor[tradeStatus.status] || 'text-gray-900'}`}>
-                    {t(`trade.statusLabel.${tradeStatus.status}`, tradeStatus.status)}
-                  </span>
-                </div>
-                {tradeStatus.statusHistory.length > 0 && (
-                  <div className="space-y-1.5 border-t border-apple-gray-5 pt-3">
-                    {tradeStatus.statusHistory.map((h, i) => (
-                      <div key={i} className="flex justify-between text-xs text-apple-gray-1">
-                        <span>{t(`trade.statusLabel.${h.status}`, h.status)}</span>
-                        <span>{h.timestamp}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={handleCheckStatus}
-                disabled={statusLoading}
-                className="w-full mb-3 py-3 rounded-xl border border-apple-blue text-apple-blue font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {statusLoading
-                  ? <div className="w-4 h-4 border-2 border-apple-blue/40 border-t-apple-blue rounded-full animate-spin" />
-                  : t('trade.checkStatus')}
-              </button>
-            )}
-            {statusError && <p className="text-apple-red text-xs mb-3">{statusError}</p>}
 
             <button onClick={onClose} className="btn-primary w-full">{t('common.done')}</button>
           </div>
