@@ -7,10 +7,10 @@ import TradeModal from '../components/TradeModal'
 import { STATUS_CONFIG } from '../constants/orderStatus'
 
 // ─── Asset Summary ────────────────────────────────────────────────────────────
-function AssetSummary({ summary, accounts, transactions, productName }) {
+function AssetSummary({ summary, transactions, productName }) {
   const { t } = useTranslation()
   if (!summary) return null
-  const totalAccountBalance = accounts.reduce((s, a) => s + a.balance, 0)
+  const totalAccountBalance = summary.totalAsset + summary.cash
   const onHolding = transactions
     .filter(tx => tx.type === 'buy' && tx.status === 'purchasing')
     .reduce((s, tx) => s + tx.amount, 0)
@@ -222,7 +222,7 @@ function TransactionSection({ txs }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Home() {
   const { t } = useTranslation()
-  const { summary, transactions, accounts, fetchSummary, fetchTransactions } = usePortfolioStore()
+  const { summary, transactions, fetchSummary, fetchTransactions } = usePortfolioStore()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [tradeModal, setTradeModal] = useState(null)
@@ -238,7 +238,6 @@ export default function Home() {
     }).finally(() => setLoading(false))
   }, [])
 
-  const productAccounts = product ? accounts.filter(a => a.productId === product.id) : []
   const productTxs = product ? transactions.filter(tx => tx.productId === product.id) : []
 
   if (loading) return <LoadingSpinner />
@@ -248,7 +247,7 @@ export default function Home() {
       <div className="px-4 pt-4 space-y-4">
         {/* Asset summary */}
         <div className="sticky top-12 lg:top-14 z-30 bg-apple-gray-6/95 backdrop-blur-xl pb-1">
-          <AssetSummary summary={summary} accounts={accounts} transactions={transactions} productName={product?.name} />
+          <AssetSummary summary={summary} transactions={transactions} productName={product?.name} />
         </div>
 
         {product && (
@@ -267,13 +266,13 @@ export default function Home() {
         <div className="fixed bottom-0 left-0 lg:left-56 right-0 bg-white/90 backdrop-blur-xl border-t border-apple-gray-5 px-4 py-4 pb-8">
           <div className="max-w-lg mx-auto flex gap-3">
             <button
-              onClick={() => setTradeModal({ product, mode: 'sell', accounts: productAccounts })}
+              onClick={() => setTradeModal({ product, mode: 'sell' })}
               className="flex-1 py-3.5 rounded-xl bg-green-50 text-apple-green font-semibold text-base hover:bg-green-100 transition-colors"
             >
               {t('product.sell')}
             </button>
             <button
-              onClick={() => setTradeModal({ product, mode: 'buy', accounts: productAccounts })}
+              onClick={() => setTradeModal({ product, mode: 'buy' })}
               className="flex-1 py-3.5 rounded-xl bg-apple-blue/10 text-apple-blue font-semibold text-base hover:bg-apple-blue/20 transition-colors"
             >
               {t('product.buy')}
@@ -286,7 +285,6 @@ export default function Home() {
         <TradeModal
           product={tradeModal.product}
           mode={tradeModal.mode}
-          accounts={tradeModal.accounts}
           onClose={() => setTradeModal(null)}
         />
       )}
