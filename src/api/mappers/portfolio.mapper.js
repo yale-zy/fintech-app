@@ -65,7 +65,7 @@ export function mapTransactionList(rawList) {
 }
 
 /**
- * Maps raw API product account response → AccountViewModel
+ * Maps raw API product account response → AccountViewModel (no balance)
  */
 export function mapAccount(raw) {
   if (!raw) return null
@@ -74,7 +74,6 @@ export function mapAccount(raw) {
     productId:      raw.productId,
     accountNo:      raw.accountNo,
     customerNumber: raw.customerNumber,
-    balance:        raw.balance,
     currency:       raw.currency,
     product:        mapProduct(raw.product),
   }
@@ -82,4 +81,20 @@ export function mapAccount(raw) {
 
 export function mapAccountList(rawList) {
   return (rawList ?? []).map(mapAccount)
+}
+
+/**
+ * Maps raw API account balance response → AccountBalanceViewModel
+ */
+export function mapAccountBalance(raw) {
+  if (!raw) return null
+  return {
+    accountNo: raw.accountNo,
+    balance:   raw.balance,
+    currency:  raw.currency,
+  }
+}
+
+export function mapAccountBalanceList(rawList) {
+  return (rawList ?? []).map(mapAccountBalance)
 }

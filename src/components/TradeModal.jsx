@@ -1,10 +1,28 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { tradeApi } from '../api'
+import { tradeApi, portfolioApi } from '../api'
+import usePortfolioStore from '../store/usePortfolioStore'
 
-export default function TradeModal({ product, mode, accounts = [], onClose }) {
+export default function TradeModal({ product, mode, onClose }) {
   const { t } = useTranslation()
-  const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.id || '')
+  const fetchTransactions = usePortfolioStore(s => s.fetchTransactions)
+  const [accounts, setAccounts] = useState([])
+  const [accountsLoading, setAccountsLoading] = useState(true)
+  const [selectedAccount, setSelectedAccount] = useState('')
+
+  useEffect(() => {
+    portfolioApi.getProductAccounts().then(async (accountList) => {
+      const balances = await Promise.allSettled(
+        accountList.map(acc => portfolioApi.getAccountBalance(acc.accountNo))
+      )
+      const merged = accountList.map((acc, i) => ({
+        ...acc,
+        balance: balances[i].status === 'fulfilled' ? balances[i].value.balance : 0,
+      }))
+      setAccounts(merged)
+      setSelectedAccount(merged[0]?.id || '')
+    }).catch(() => {}).finally(() => setAccountsLoading(false))
+  }, [])
   const [amount, setAmount] = useState('')
   const [shares, setShares] = useState('')
   const [loading, setLoading] = useState(false)
@@ -44,6 +62,7 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
       if (status?.error) setStatusError(status.error)
       else if (status) setTradeStatus(status)
       setResult(res)
+      fetchTransactions().catch(() => {})
     } catch (e) {
       setError(e.message)
     } finally {
@@ -111,10 +130,14 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
             <p className="text-apple-gray-1 text-sm mb-4">{product.name}</p>
 
             {/* Account selector */}
-            {accounts.length > 0 && (
-              <div className="mb-4">
-                <label className="text-xs text-apple-gray-1 font-medium block mb-2">{t('account.select')}</label>
-                <div className="space-y-2">
+            <div className="mb-4">
+              <label className="text-xs text-apple-gray-1 font-medium block mb-2">{t('account.select')}</label>
+              {accountsLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="w-5 h-5 border-2 border-apple-gray-4 border-t-apple-blue rounded-full animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {accounts.map(acc => (
                     <button
                       key={acc.id}
@@ -141,8 +164,8 @@ export default function TradeModal({ product, mode, accounts = [], onClose }) {
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             {mode === 'buy' ? (
               <div>

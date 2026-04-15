@@ -17,6 +17,7 @@ export const mockedEndpoints = new Set([
   'GET /portfolio/summary',
   'GET /portfolio/transactions',
   'GET /portfolio/accounts',
+  'GET /portfolio/account-balances/:accountNo',
   'POST /trade/buy',
   'POST /trade/sell',
   'GET /trade/status/:tradeId',
@@ -71,7 +72,6 @@ const routes = [
     key: 'products_detail', label: 'GET /products/:id', method: 'get', url: /^\/products\/(.+)$/,
     async handler(cfg, [id]) {
       await delay()
-      // Find from the products list; fall back to the detail fixture
       const found = products.find(p => p.id === id)
       if (!found) throw { message: 'product_not_found', status: 404 }
       return found
@@ -95,6 +95,16 @@ const routes = [
     key: 'portfolio_accounts', label: 'GET /portfolio/accounts', method: 'get', url: /^\/portfolio\/accounts$/,
     async handler() { await delay(200); return accounts },
   },
+  {
+    key: 'portfolio_account_balances', label: 'GET /portfolio/account-balances/:accountNo', method: 'get', url: /^\/portfolio\/account-balances\/(.+)$/,
+    async handler(cfg, [accountNo]) {
+      await delay(200)
+      // Generate a deterministic balance from the account number suffix
+      const suffix = parseInt(accountNo.replace(/\D/g, '').slice(-6), 10) || 1000
+      const balance = parseFloat(((suffix % 90000) + 1000).toFixed(2))
+      return { accountNo, balance, currency: 'CNY' }
+    },
+  },
 
   // ── Trade ─────────────────────────────────────────────────────────────────
   {
@@ -115,7 +125,6 @@ const routes = [
     key: 'trade_status', label: 'GET /trade/status/:tradeId', method: 'get', url: /^\/trade\/status\/(.+)$/,
     async handler(cfg, [tradeId]) {
       await delay(400)
-      // Simulate cycling through statuses based on tradeId suffix for demo purposes
       const statuses = ['pending', 'pending', 'filled']
       const idx = parseInt(tradeId.slice(-1), 10) % statuses.length
       const status = statuses[idx] || 'pending'
