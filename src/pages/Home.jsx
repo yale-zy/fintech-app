@@ -7,10 +7,10 @@ import TradeModal from '../components/TradeModal'
 import { STATUS_CONFIG } from '../constants/orderStatus'
 
 // ─── Asset Summary ────────────────────────────────────────────────────────────
-function AssetSummary({ summary, transactions, productName }) {
+function AssetSummary({ summary, transactions, productName, totalAccountBalance }) {
   const { t } = useTranslation()
   if (!summary) return null
-  const totalAccountBalance = summary.totalAsset + summary.cash
+  const totalAssetBalance = summary.totalAsset + summary.cash
   const onHolding = transactions
     .filter(tx => tx.type === 'buy' && tx.status === 'purchasing')
     .reduce((s, tx) => s + tx.amount, 0)
@@ -24,18 +24,28 @@ function AssetSummary({ summary, transactions, productName }) {
         <div className="flex-1">
           <p className="text-xs text-apple-gray-1 mb-1">{t('profile.totalAsset')}</p>
           <p className="text-2xl font-bold text-gray-900 tracking-tight">
-            {totalAccountBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            {totalAssetBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </p>
         </div>
         <div className="w-px h-10 bg-apple-gray-5 flex-shrink-0" />
-        <div className="flex-1">
-          <div className="flex items-center gap-1.5 mb-1">
-            <span className="w-2 h-2 rounded-full bg-apple-green flex-shrink-0" />
-            <p className="text-xs text-apple-gray-1">{t('home.onHolding')}</p>
+        <div className="flex-1 space-y-2">
+          {totalAccountBalance != null && (
+            <div>
+              <p className="text-xs text-apple-gray-1 mb-0.5">{t('account.totalBalance')}</p>
+              <p className="text-base font-semibold text-gray-900">
+                {totalAccountBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+          )}
+          <div>
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="w-2 h-2 rounded-full bg-apple-green flex-shrink-0" />
+              <p className="text-xs text-apple-gray-1">{t('home.onHolding')}</p>
+            </div>
+            <p className="text-base font-semibold text-gray-900">
+              {onHolding.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </p>
           </div>
-          <p className="text-lg font-semibold text-gray-900">
-            {onHolding.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-          </p>
         </div>
       </div>
     </div>
@@ -222,7 +232,7 @@ function TransactionSection({ txs }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Home() {
   const { t } = useTranslation()
-  const { summary, transactions, fetchSummary, fetchTransactions } = usePortfolioStore()
+  const { summary, transactions, totalAccountBalance, fetchSummary, fetchTransactions, fetchTotalAccountBalance } = usePortfolioStore()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [tradeModal, setTradeModal] = useState(null)
@@ -230,6 +240,7 @@ export default function Home() {
   useEffect(() => {
     fetchSummary()
     fetchTransactions()
+    fetchTotalAccountBalance()
     // Load the first (and currently only) product
     productApi.getList().then(list => {
       if (list[0]) {
@@ -247,7 +258,7 @@ export default function Home() {
       <div className="px-4 pt-4 space-y-4">
         {/* Asset summary */}
         <div className="sticky top-12 lg:top-14 z-30 bg-apple-gray-6/95 backdrop-blur-xl pb-1">
-          <AssetSummary summary={summary} transactions={transactions} productName={product?.name} />
+          <AssetSummary summary={summary} transactions={transactions} productName={product?.name} totalAccountBalance={totalAccountBalance} />
         </div>
 
         {product && (

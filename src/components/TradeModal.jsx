@@ -6,6 +6,7 @@ import usePortfolioStore from '../store/usePortfolioStore'
 export default function TradeModal({ product, mode, onClose }) {
   const { t } = useTranslation()
   const fetchTransactions = usePortfolioStore(s => s.fetchTransactions)
+  const fetchTotalAccountBalance = usePortfolioStore(s => s.fetchTotalAccountBalance)
   const [accounts, setAccounts] = useState([])
   const [accountsLoading, setAccountsLoading] = useState(true)
   const [selectedAccount, setSelectedAccount] = useState('')
@@ -63,6 +64,7 @@ export default function TradeModal({ product, mode, onClose }) {
       else if (status) setTradeStatus(status)
       setResult(res)
       fetchTransactions().catch(() => {})
+      fetchTotalAccountBalance().catch(() => {})
     } catch (e) {
       setError(e.message)
     } finally {

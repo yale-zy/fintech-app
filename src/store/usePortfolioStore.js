@@ -6,6 +6,7 @@ const usePortfolioStore = create((set) => ({
   holdings: [],
   transactions: [],
   accounts: [],
+  totalAccountBalance: null,
   loading: false,
 
   fetchSummary: async () => {
@@ -25,6 +26,15 @@ const usePortfolioStore = create((set) => ({
   fetchTransactions: async () => {
     const transactions = await portfolioApi.getTransactions()
     set({ transactions })
+  },
+
+  fetchTotalAccountBalance: async () => {
+    const accounts = await portfolioApi.getProductAccounts()
+    const balances = await Promise.all(
+      accounts.map(acc => portfolioApi.getAccountBalance(acc.accountNo))
+    )
+    const total = balances.reduce((sum, b) => sum + (b?.balance ?? 0), 0)
+    set({ totalAccountBalance: total })
   },
 }))
 
