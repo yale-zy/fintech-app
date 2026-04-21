@@ -1,0 +1,150 @@
+# azure-pipelines.yml
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  # 本地临时 NuGet feed 路径（pipeline agent 上的临时目录）
+  localNugetFeed: '$(Agent.TempDirectory)\local-nuget-feed'
+  # Solution 路径（C/D/E/F 各自独立 solution，project 与 solution 同名）
+  solutionC: 'SolutionC/SolutionC.sln'
+  solutionD: 'SolutionD/SolutionD.sln'
+  solutionE: 'SolutionE/SolutionE.sln'
+  solutionF: 'SolutionF/SolutionF.sln'
+  solutionB: 'SolutionB/SolutionB.sln'
+  # Project 路径（project 与 solution 同名，嵌套在同名子目录下）
+  projectC: 'SolutionC/SolutionC/SolutionC.csproj'
+  projectD: 'SolutionD/SolutionD/SolutionD.csproj'
+  projectE: 'SolutionE/SolutionE/SolutionE.csproj'
+  projectF: 'SolutionF/SolutionF/SolutionF.csproj'
+  # 各 project 版本号（hard-coded，升级时在此处修改）
+  versionC: '1.0.0'
+  versionD: '2.1.0'
+  versionE: '1.3.5'
+  versionF: '3.0.1'
+
+stages:
+  # ─────────────────────────────────────────
+  # Stage 1: Build Solution A & publish NuGet packages to local feed
+  # ─────────────────────────────────────────
+  - stage: BuildSolutionA
+    displayName: 'Build Solution A and pack NuGet packages'
+    jobs:
+      - job: BuildAndPack
+        displayName: 'Build C/D/E/F and pack to local feed'
+        steps:
+          # 1. 创建本地 NuGet feed 目录
+          - powershell: |
+              New-Item -ItemType Directory -Force -Path "$(localNugetFeed)"
+              Write-Host "Local NuGet feed created at: $(localNugetFeed)"
+            displayName: 'Create local NuGet feed directory'
+
+          # 2. Restore & Build C/D/E/F（各自独立 solution）
+          - powershell: |
+              $solutions = @(
+                "$(solutionC)",
+                "$(solutionD)",
+                "$(solutionE)",
+                "$(solutionF)"
+              )
+              foreach ($sln in $solutions) {
+                Write-Host "Restoring $sln ..."
+                nuget restore $sln
+                Write-Host "Building $sln ..."
+                msbuild $sln `
+                  /p:Configuration=$(buildConfiguration) `
+                  /p:Platform="Any CPU" `
+                  /m
+              }
+            displayName: 'Restore and build C/D/E/F solutions'
+
+          # 3. 打包 C/D/E/F 到本地 feed
+          #    版本号 hard-coded 在 variables 中，升级时修改对应的 versionX 变量
+          - powershell: |
+              $projects = @(
+                @{ Path = "$(projectC)"; Version = "$(versionC)" },
+                @{ Path = "$(projectD)"; Version = "$(versionD)" },
+                @{ Path = "$(projectE)"; Version = "$(versionE)" },
+                @{ Path = "$(projectF)"; Version = "$(versionF)" }
+              )
+
+              foreach ($p in $projects) {
+                Write-Host "Packing $($p.Path) at version $($p.Version) ..."
+                nuget pack $($p.Path) `
+                  -Properties Configuration=$(buildConfiguration) `
+                  -OutputDirectory "$(localNugetFeed)" `
+                  -Version $($p.Version)
+              }
+
+              Write-Host "Packages in local feed:"
+              Get-ChildItem "$(localNugetFeed)" | Select-Object Name
+            displayName: 'Pack C/D/E/F into local NuGet feed (hard-coded versions)'
+
+          # 4. 将本地 feed 目录作为 pipeline artifact 传递给下一个 stage
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish local NuGet feed as artifact'
+            inputs:
+              targetPath: '$(localNugetFeed)'
+              artifact: 'local-nuget-feed'
+              publishLocation: 'pipeline'
+
+  # ─────────────────────────────────────────
+  # Stage 2: Build Solution B（依赖 local feed 中的 C/D/E/F）
+  # ─────────────────────────────────────────
+  - stage: BuildSolutionB
+    displayName: 'Build Solution B'
+    dependsOn: BuildSolutionA
+    jobs:
+      - job: BuildH
+        displayName: 'Restore and build Project H'
+        steps:
+          # 1. 下载上一 stage 发布的 local feed artifact
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download local NuGet feed artifact'
+            inputs:
+              artifactName: 'local-nuget-feed'
+              targetPath: '$(localNugetFeed)'
+
+          # 2. 将本地 feed 注册到 NuGet 配置（仅当前 pipeline 有效）
+          - powershell: |
+              nuget sources add `
+                -Name "LocalTempFeed" `
+                -Source "$(localNugetFeed)" `
+                -ConfigFile "$(Build.SourcesDirectory)\NuGet.Config"
+              Write-Host "Registered local feed: $(localNugetFeed)"
+              nuget sources list
+            displayName: 'Register local NuGet feed'
+
+          # 3. Restore Solution B（packages.config 模式）
+          - task: NuGetCommand@2
+            displayName: 'NuGet restore - Solution B'
+            inputs:
+              restoreSolution: '$(solutionB)'
+              feedsToUse: 'config'
+              nugetConfigPath: '$(Build.SourcesDirectory)\NuGet.Config'
+
+          # 4. Build Solution B
+          - task: VSBuild@1
+            displayName: 'Build Solution B'
+            inputs:
+              solution: '$(solutionB)'
+              configuration: '$(buildConfiguration)'
+              platform: 'Any CPU'
+
+          # 5. 运行测试（如有）
+          - task: VSTest@2
+            displayName: 'Run tests - Solution B'
+            inputs:
+              testSelector: 'testAssemblies'
+              testAssemblyVer2: |
+                **\*Tests*.dll
+                !**\obj\**
+              searchFolder: '$(System.DefaultWorkingDirectory)'
+              configuration: '$(buildConfiguration)'
+            continueOnError: true
